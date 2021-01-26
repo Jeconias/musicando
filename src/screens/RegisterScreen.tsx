@@ -4,10 +4,11 @@ import DateTimePicker, {
   WindowsDatePickerChangeEvent,
 } from '@react-native-community/datetimepicker';
 import {differenceInYears} from 'date-fns';
+import {capitalize} from 'lodash';
 import React, {useCallback, useEffect, useState} from 'react';
 import {Controller, useForm} from 'react-hook-form';
 import {Keyboard, View} from 'react-native';
-import styled, {css, useTheme} from 'styled-components/native';
+import styled, {css} from 'styled-components/native';
 import * as yup from 'yup';
 import ButtonNormal from '~/components/Button/ButtonNormal';
 import ButtonText from '~/components/Button/ButtonText';
@@ -25,7 +26,10 @@ import {
 } from '~/config/types';
 import api from '~/core/api';
 import {UserType} from '~/core/entity/common';
+import useAuth from '~/hooks/useAuth';
+import useFeedback from '~/hooks/useFeedback';
 import useNavigate from '~/hooks/useNavigate';
+import useTheme from '~/hooks/useTheme';
 import {format} from '~/utils/date';
 
 interface FormData {
@@ -61,7 +65,7 @@ const schema = yup.object().shape({
 const defaultValues = ENVIRONMENT.isDev
   ? {
       name: 'Jeconias Santos',
-      email: 'me.jeconias@gmail.com',
+      email: 'musicando@musicando.com',
       birthdate: new Date(1980, 0, 17),
       password: '@Senha123',
       terms: false,
@@ -76,12 +80,22 @@ const defaultValues = ENVIRONMENT.isDev
 
 const RegisterScreen = () => {
   const {to} = useNavigate();
-  const theme = useTheme();
+  const {handleUpdate} = useAuth();
+  const {feedback} = useFeedback();
+  const {theme} = useTheme();
 
   const [showDateTimePicker, setShowDateTimePicker] = useState(false);
   const [loading, setLoading] = useState<LoadingStatus>('idle');
 
-  const {control, handleSubmit, setValue, errors, watch, register} = useForm({
+  const {
+    control,
+    handleSubmit,
+    setValue,
+    errors,
+    watch,
+    register,
+    reset,
+  } = useForm({
     mode: 'onTouched',
     resolver: yupResolver(schema),
     defaultValues: defaultValues,
@@ -116,19 +130,37 @@ const RegisterScreen = () => {
         });
 
         if (response.data.status) {
+          reset({
+            name: '',
+            email: '',
+            birthdate: undefined,
+            password: '',
+            terms: false,
+          });
+          handleUpdate({email: data.email});
+          feedback({
+            message: 'Cadastro realizado com sucesso!',
+            type: 'success',
+          });
+          setLoading('ok');
           to(AppStackScreens.Login);
         } else {
           //TODO(Jeconias): Solve it.
         }
       } catch (e) {
-        //TODO(Jeconias): Solve it.
-
         const error: RequestError = e;
-        console.log(error.response);
-        setLoading('ok');
+        const message =
+          error.response?.data.message ??
+          'Ops! Tivemos um problema inesperado.';
+
+        feedback({
+          message,
+          type: 'danger',
+        });
+        setLoading('idle');
       }
     },
-    [setLoading, to],
+    [setLoading, handleUpdate, feedback, reset, to],
   );
 
   const hasError = !!Object.keys(errors ?? {}).length;
@@ -179,21 +211,32 @@ const RegisterScreen = () => {
             name="birthdate"
             defaultValue=""
             control={control}
-            render={({onBlur, value}: {value?: Date; onBlur: any}) => (
-              <FormGroup
-                onFocus={() => {
-                  Keyboard.dismiss();
-                  setShowDateTimePicker(true);
-                }}
-                onBlur={onBlur}
-                value={value ? value?.toDateString() : ''}
-                placeholder="Data de Nascimento"
-                placeholderTextColor={theme.colors.text}
-                showSoftInputOnFocus={false}
-                icon="calendar"
-                error={errors?.birthdate?.message}
-              />
-            )}
+            render={({onBlur, value}: {value?: Date; onBlur: any}) => {
+              const formattedDate = value ? format(value, 'dd MMMM yyyy') : '';
+              const splittedDate = formattedDate.split(' ');
+              const date =
+                splittedDate.length > 2
+                  ? `${splittedDate[0]} ${capitalize(splittedDate[1])} ${
+                      splittedDate[2]
+                    }`
+                  : '';
+
+              return (
+                <FormGroup
+                  onFocus={() => {
+                    Keyboard.dismiss();
+                    setShowDateTimePicker(true);
+                  }}
+                  onBlur={onBlur}
+                  value={date}
+                  placeholder="Data de Nascimento"
+                  placeholderTextColor={theme.colors.text}
+                  showSoftInputOnFocus={false}
+                  icon="calendar"
+                  error={errors?.birthdate?.message}
+                />
+              );
+            }}
           />
           <Controller
             name="password"

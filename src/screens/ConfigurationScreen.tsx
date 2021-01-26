@@ -69,7 +69,7 @@ const Content = styled.View`
     flex-direction: row;
     position: relative;
     justify-content: center;
-    background-color: ${theme.colors.backgroundOpacity};
+    background-color: ${theme.colors.backgroundBlackOpacity};
     padding: ${theme.spacing.md};
     margin-top: ${math(`${theme.spacing.xlg} * 2`)};
     border-radius: 10px;

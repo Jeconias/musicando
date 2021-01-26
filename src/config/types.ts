@@ -40,4 +40,4 @@ export type Response = {
   message: string;
 };
 
-export type RequestError<T = any> = AxiosError<T>;
+export type RequestError<T = Response> = AxiosError<T>;

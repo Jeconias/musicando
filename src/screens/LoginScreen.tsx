@@ -1,5 +1,5 @@
 import {yupResolver} from '@hookform/resolvers/yup';
-import React, {useCallback, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {Controller, useForm} from 'react-hook-form';
 import {View} from 'react-native';
 import {TouchableOpacity} from 'react-native-gesture-handler';
@@ -14,9 +14,15 @@ import Container from '~/components/Layout/Container';
 import Loading from '~/components/Loading/Loading';
 import Logo from '~/components/Logo';
 import Text from '~/components/Text';
-import {AppStackScreens, LoadingStatus, RootStackScreens} from '~/config/types';
+import {
+  AppStackScreens,
+  LoadingStatus,
+  RequestError,
+  RootStackScreens,
+} from '~/config/types';
 import useNavigate from '~/hooks/useNavigate';
 import useAuth from '~/hooks/useAuth';
+import useFeedback from '~/hooks/useFeedback';
 
 interface FormData {
   email: string;
@@ -36,16 +42,17 @@ const schema = yup.object().shape({
 
 const LoginScreen = () => {
   const theme = useTheme();
-  const {handleOnSuccess} = useAuth();
-  const {to, navigation} = useNavigate();
+  const {user, handleOnSuccess} = useAuth();
+  const {feedback} = useFeedback();
+  const {to} = useNavigate();
 
   const [loading, setLoading] = useState<LoadingStatus>('idle');
 
-  const {control, handleSubmit, errors, watch} = useForm({
+  const {control, handleSubmit, errors, setValue, setError, watch} = useForm({
     mode: 'onSubmit',
     resolver: yupResolver(schema),
     defaultValues: {
-      email: '',
+      email: user?.email ?? '',
       password: '',
     },
   });
@@ -65,14 +72,45 @@ const LoginScreen = () => {
           console.error('Login - Error');
         }
       } catch (e) {
+        const error: RequestError = e;
+        const message =
+          error.response?.data.message ??
+          'Ops! Tivemos um problema inesperado.';
+
+        feedback({
+          message,
+          type: 'danger',
+        });
         setLoading('idle');
-        //TODO(Jeconias): Solve it.
-        console.log('Login Error');
-        console.log(e.response);
       }
     },
-    [handleOnSuccess],
+    [handleOnSuccess, feedback],
   );
+
+  const handlePasswordRecovery = useCallback(() => {
+    schema
+      .isValid({
+        email: email,
+      })
+      .then((isValid) => {
+        if (isValid) {
+          feedback({
+            message: 'Enviamos um link de recuperação.',
+            type: 'success',
+          });
+        } else {
+          setError('email', {
+            type: 'validate',
+            message: 'Email inválido.',
+          });
+        }
+      });
+  }, [email, feedback, setError]);
+
+  useEffect(() => {
+    if (user?.email && !email)
+      setValue('email', user.email, {shouldValidate: true});
+  }, [user, setValue]);
 
   const isLoading = loading === 'loading';
 
@@ -134,7 +172,11 @@ const LoginScreen = () => {
             />
           </WrapperInputs>
           <RightText>
-            <ButtonText disabled={isLoading} size="xs" color="text">
+            <ButtonText
+              disabled={isLoading}
+              size="xs"
+              color="text"
+              onPress={handlePasswordRecovery}>
               Esqueceu sua senha?
             </ButtonText>
           </RightText>

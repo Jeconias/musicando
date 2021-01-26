@@ -1,8 +1,3 @@
-project.ext.envConfigFiles = [
-    debug: ".env.development",
-    release: ".env.production",
-]
-
 apply plugin: "com.android.application"
 apply from: project(':react-native-config').projectDir.getPath() + "/dotenv.gradle"
 
@@ -151,11 +146,11 @@ android {
     }
     signingConfigs {
         release {
-            if(project.hasProperty('MYAPP_RELEASE_STORE_FILE')){
-                storeFile file(MYAPP_RELEASE_STORE_FILE)
-                storePassword MYAPP_RELEASE_STORE_PASSWORD
-                keyAlias MYAPP_RELEASE_KEY_ALIAS
-                keyPassword MYAPP_RELEASE_KEY_PASSWORD
+            if(project.env.get("MYAPP_RELEASE_STORE_FILE")) {
+                storeFile file(project.env.get("MYAPP_RELEASE_STORE_FILE"))
+                storePassword project.env.get("MYAPP_RELEASE_STORE_PASSWORD")
+                keyAlias project.env.get("MYAPP_RELEASE_KEY_ALIAS")
+                keyPassword project.env.get("MYAPP_RELEASE_KEY_PASSWORD")
             }
         }
         debug {
@@ -172,7 +167,12 @@ android {
         release {
             // Caution! In production, you need to generate your own keystore file.
             // see https://reactnative.dev/docs/signed-apk-android.
-            signingConfig signingConfigs.debug
+            if(project.env.get("ENVIRONMENT") == "production") {
+                signingConfig signingConfigs.release
+            }else {
+                signingConfig signingConfigs.debug
+            }
+
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
         }

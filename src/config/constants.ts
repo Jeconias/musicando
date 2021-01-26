@@ -6,15 +6,19 @@ const deviceDimensions = Dimensions.get('window');
 export const THEME = {
   colors: {
     primary: '#F08700',
+    secondary: '???',
 
     //Text
     title: '#fff',
     text: '#8C8C8C',
 
+    //StatusBar
+    statusBar: '#1B202C',
+
     //Backgrounds
     backgroundBlack: '#1B202C',
     backgroundBlackSupport: '#313640',
-    backgroundOpacity: '#222732',
+    backgroundBlackOpacity: '#222732',
 
     //Support
     white: '#fff',

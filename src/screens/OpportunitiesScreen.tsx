@@ -206,7 +206,7 @@ const CircledOption = styled.TouchableOpacity`
     width: 50px;
     height: 50px;
     border-radius: 25px;
-    background-color: ${theme.colors.backgroundOpacity};
+    background-color: ${theme.colors.backgroundBlackOpacity};
     margin: 0 ${theme.spacing.xs};
   `}
 `;

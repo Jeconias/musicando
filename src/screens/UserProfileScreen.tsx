@@ -96,7 +96,7 @@ const UserInfos = styled.View`
     width: 100%;
     height: 126px;
     border-radius: 10px;
-    background-color: ${theme.colors.backgroundOpacity};
+    background-color: ${theme.colors.backgroundBlackOpacity};
     margin: ${theme.spacing.xlg} 0 ${theme.spacing.md};
   `}
 `;
@@ -148,7 +148,7 @@ const ContentsWrapper = styled.View`
     width: 100%;
     border-radius: 10px;
     padding: ${theme.spacing.sm};
-    background-color: ${theme.colors.backgroundOpacity};
+    background-color: ${theme.colors.backgroundBlackOpacity};
     margin-bottom: ${theme.spacing.md};
   `}
 `;

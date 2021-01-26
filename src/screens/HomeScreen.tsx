@@ -106,7 +106,7 @@ const HeaderBackground = styled.View<{width: number; height: number}>`
     align-items: flex-end;
     width: ${width}px;
     height: ${Math.floor((height / 100) * 23)}px;
-    background-color: ${theme.colors.backgroundOpacity};
+    background-color: ${theme.colors.backgroundBlackOpacity};
     margin: -${math(`${theme.spacing.xlg} * 2`)} -${theme.spacing.md}
       ${theme.spacing.md} -${theme.spacing.md};
     padding-bottom: ${theme.spacing.md};

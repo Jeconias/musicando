@@ -10,13 +10,14 @@ import {AuthenticationResponse} from '~/core/api/api.auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {STORAGE_PREFIX, TOKEN_STORAGE_KEY} from '~/config/constants';
 import {User} from '~/core/entity/user';
-import {isEmpty} from 'lodash';
+import {isEmpty, merge} from 'lodash';
 
 export interface AuthContextInterface {
   user?: User;
   isAuthenticated?: boolean;
   stateHasRecovered?: boolean;
   handleOnSuccess(data: AuthenticationResponse): void;
+  handleUpdate(data: Partial<User>): void;
   logout(): void;
 }
 
@@ -105,6 +106,11 @@ const AuthProvider = ({children}: ComponentWithChildrenInterface) => {
     );
   }, []);
 
+  const handleUpdate = useCallback(
+    (data: Partial<User>) => setUser((prev) => ({...prev, ...(data as User)})),
+    [setUser],
+  );
+
   useEffect(() => {
     if (!user) handleStateRecovery();
   }, [user, handleStateRecovery]);
@@ -116,6 +122,7 @@ const AuthProvider = ({children}: ComponentWithChildrenInterface) => {
         isAuthenticated: isAuthenticatedMemorized,
         stateHasRecovered: loading === 'ok',
         handleOnSuccess,
+        handleUpdate,
         logout: handleLogout,
       }}>
       {children}
