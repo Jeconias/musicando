@@ -15,6 +15,7 @@ import ButtonText from '~/components/Button/ButtonText';
 import {SafeAreaView} from '~/components/common';
 import FormGroup from '~/components/Form/FormGroup';
 import Container from '~/components/Layout/Container';
+import Loading from '~/components/Loading/Loading';
 import Logo from '~/components/Logo';
 import Text from '~/components/Text';
 import {ENVIRONMENT} from '~/config/constants';
@@ -165,6 +166,8 @@ const RegisterScreen = () => {
 
   const hasError = !!Object.keys(errors ?? {}).length;
 
+  const isLoading = loading === 'loading';
+
   useEffect(() => {
     register('terms');
   }, [register]);
@@ -257,7 +260,7 @@ const RegisterScreen = () => {
           />
           <Terms>
             <CheckBox
-              disabled={loading === 'loading'}
+              disabled={isLoading}
               value={terms}
               onValueChange={(value: boolean) =>
                 setValue('terms', value, {shouldValidate: true})
@@ -280,8 +283,8 @@ const RegisterScreen = () => {
 
           <CustomButtonNormal
             onPress={handleSubmit(onSubmit)}
-            disabled={hasError || !terms}>
-            Concluir
+            disabled={hasError || !terms || isLoading}>
+            {isLoading ? <Loading /> : 'Concluir'}
           </CustomButtonNormal>
 
           {showDateTimePicker && (
