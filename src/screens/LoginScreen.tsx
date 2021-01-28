@@ -48,7 +48,15 @@ const LoginScreen = () => {
 
   const [loading, setLoading] = useState<LoadingStatus>('idle');
 
-  const {control, handleSubmit, errors, setValue, setError, watch} = useForm({
+  const {
+    control,
+    handleSubmit,
+    errors,
+    setValue,
+    setError,
+    clearErrors,
+    watch,
+  } = useForm({
     mode: 'onSubmit',
     resolver: yupResolver(schema),
     defaultValues: {
@@ -88,24 +96,21 @@ const LoginScreen = () => {
   );
 
   const handlePasswordRecovery = useCallback(() => {
-    schema
-      .isValid({
-        email: email,
-      })
-      .then((isValid) => {
-        if (isValid) {
-          feedback({
-            message: 'Enviamos um link de recuperação.',
-            type: 'success',
-          });
-        } else {
-          setError('email', {
-            type: 'validate',
-            message: 'Email inválido.',
-          });
-        }
-      });
-  }, [email, feedback, setError]);
+    schema.fields.email.isValid(email).then((isValid) => {
+      if (isValid) {
+        feedback({
+          message: 'Enviamos um link de recuperação.',
+          type: 'success',
+        });
+        clearErrors('email');
+      } else {
+        setError('email', {
+          type: 'validate',
+          message: 'Email inválido.',
+        });
+      }
+    });
+  }, [email, feedback, setError, clearErrors]);
 
   useEffect(() => {
     if (user?.email && !email)

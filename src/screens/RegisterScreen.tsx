@@ -14,6 +14,7 @@ import ButtonNormal from '~/components/Button/ButtonNormal';
 import ButtonText from '~/components/Button/ButtonText';
 import {SafeAreaView} from '~/components/common';
 import FormGroup from '~/components/Form/FormGroup';
+import Radio from '~/components/Form/Radio';
 import Container from '~/components/Layout/Container';
 import Loading from '~/components/Loading/Loading';
 import Logo from '~/components/Logo';
@@ -38,6 +39,7 @@ interface FormData {
   email: string;
   birthdate: Date;
   password: string;
+  userType: UserType;
 }
 
 const schema = yup.object().shape({
@@ -60,6 +62,10 @@ const schema = yup.object().shape({
     .string()
     .min(8, 'A Senha deve conter no mínimo 8 caracteres.')
     .required('Informação obrigatória.'),
+  userType: yup
+    .string()
+    .required('Informação obrigatória.')
+    .oneOf([UserType.MUSICIAN, UserType.PROMOTER]),
   terms: yup.bool().required(),
 });
 
@@ -69,6 +75,7 @@ const defaultValues = ENVIRONMENT.isDev
       email: 'musicando@musicando.com',
       birthdate: new Date(1980, 0, 17),
       password: '@Senha123',
+      userType: UserType.MUSICIAN,
       terms: false,
     }
   : {
@@ -76,6 +83,7 @@ const defaultValues = ENVIRONMENT.isDev
       email: '',
       birthdate: undefined,
       password: '',
+      userType: UserType.MUSICIAN,
       terms: false,
     };
 
@@ -102,7 +110,7 @@ const RegisterScreen = () => {
     defaultValues: defaultValues,
   });
 
-  const {terms} = watch();
+  const {terms, userType} = watch();
 
   const handleDatePicker = useCallback(
     (_: WindowsDatePickerChangeEvent, date?: Date) => {
@@ -110,6 +118,13 @@ const RegisterScreen = () => {
       setShowDateTimePicker(false);
     },
     [setValue, setShowDateTimePicker],
+  );
+
+  const handleSelectUserType = useCallback(
+    (user: UserType) => {
+      if (user !== userType) setValue('userType', user, {shouldValidate: true});
+    },
+    [setValue, userType],
   );
 
   const onSubmit = useCallback(
@@ -127,7 +142,7 @@ const RegisterScreen = () => {
           birthdate: format(data.birthdate, 'yyyy-MM-dd'),
           phoneNumber: '84994381350',
           description: 'NONE',
-          userType: UserType.PROMOTER,
+          userType: data.userType,
         });
 
         if (response.data.status) {
@@ -170,6 +185,7 @@ const RegisterScreen = () => {
 
   useEffect(() => {
     register('terms');
+    register('userType');
   }, [register]);
 
   return (
@@ -258,6 +274,26 @@ const RegisterScreen = () => {
               />
             )}
           />
+          <UserTypeWrapper>
+            <View>
+              <Text size="sm">Tipo de perfil</Text>
+            </View>
+            <Flex>
+              <CustomRadio
+                value={UserType.MUSICIAN}
+                isChecked={userType === UserType.MUSICIAN}
+                onSelected={handleSelectUserType}>
+                Músico
+              </CustomRadio>
+              <Radio
+                value={UserType.PROMOTER}
+                isChecked={userType === UserType.PROMOTER}
+                onSelected={handleSelectUserType}>
+                Promotor
+              </Radio>
+            </Flex>
+          </UserTypeWrapper>
+
           <Terms>
             <CheckBox
               disabled={isLoading}
@@ -320,5 +356,24 @@ const Terms = styled.View`
     align-items: center;
     padding-top: ${theme.spacing.md}
     margin-bottom: ${theme.spacing.xxs};
+  `}
+`;
+
+const UserTypeWrapper = styled.View`
+  ${({theme}) => css`
+    padding: 0 ${theme.spacing.xs};
+  `}
+`;
+
+const Flex = styled.View`
+  ${({theme}) => css`
+    padding-top: ${theme.spacing.xs};
+    flex-direction: row;
+  `}
+`;
+
+const CustomRadio = styled(Radio)`
+  ${({theme}) => css`
+    margin-right: ${theme.spacing.sm};
   `}
 `;
