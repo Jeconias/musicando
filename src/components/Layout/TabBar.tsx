@@ -124,7 +124,7 @@ const TabBarContainer = styled.View`
     flex-direction: row;
     justify-content: center;
     align-items: center;
-    background-color: ${theme.colors.backgroundBlackSupport};
+    background-color: ${theme.colors.backgroundBlackOpacity};
   `}
 `;
 

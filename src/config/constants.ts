@@ -13,12 +13,12 @@ export const THEME = {
     text: '#8C8C8C',
 
     //StatusBar
-    statusBar: '#1B202C',
+    statusBar: '#1D253C',
 
     //Backgrounds
-    backgroundBlack: '#1B202C',
-    backgroundBlackSupport: '#313640',
-    backgroundBlackOpacity: '#222732',
+    backgroundBlack: '#1D253C',
+    backgroundBlackSupport: '#4A5162',
+    backgroundBlackOpacity: '#283045',
 
     //Support
     white: '#fff',

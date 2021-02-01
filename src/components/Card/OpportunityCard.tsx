@@ -36,15 +36,15 @@ const OpportunityCard = ({onSelect, ...props}: OpportunityCardInterface) => (
         }
       />
       <Content>
-        <Text size="sm" color="primary">
+        <Text size="sm" color="white">
           {props.title}
         </Text>
         <Description size="xs" color="text">
           {props.description}
         </Description>
-        <WrapperPrice size="xs" color="text">
+        <WrapperPrice size="xs" color="white">
           Valor inicial de{' '}
-          <Price size="xs" color="text">
+          <Price size="xs" color="primary">
             R$ {props.price.toString()}
           </Price>
         </WrapperPrice>

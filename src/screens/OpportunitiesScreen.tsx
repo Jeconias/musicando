@@ -20,31 +20,31 @@ import OpportunityCard from '~/components/Card/OpportunityCard';
 const DATABASE = [
   {
     id: '1',
-    name: 'Ruana Lima',
+    title: 'Ruana Lima',
     description: 'Alguma descrição do usuário aqui para que descreva algo.',
     price: 1217,
   },
   {
     id: '2',
-    name: 'Marcos Lima',
+    title: 'Marcos Lima',
     description: 'Alguma descrição do usuário aqui para que descreva algo.',
     price: 1205,
   },
   {
     id: '3',
-    name: 'Mario Lima',
+    title: 'Mario Lima',
     description: 'Alguma descrição do usuário aqui para que descreva algo.',
     price: 1250.21,
   },
   {
     id: '4',
-    name: 'José Lima',
+    title: 'José Lima',
     description: 'Alguma descrição do usuário aqui para que descreva algo.',
     price: 10.21,
   },
   {
     id: '5',
-    name: 'Você Lima',
+    title: 'Você Lima',
     description: 'Alguma descrição do usuário aqui para que descreva algo.',
     price: 120.26,
   },
@@ -148,7 +148,7 @@ const Filter = styled(Animated.View)<{height: number}>`
     border-top-left-radius: 10px;
     border-top-right-radius: 10px;
     height: ${height}px;
-    background-color: ${theme.colors.backgroundBlackSupport};
+    background-color: ${theme.colors.backgroundBlackOpacity};
   `}
 `;
 
@@ -179,7 +179,7 @@ const CircledOption = styled.TouchableOpacity`
     width: 50px;
     height: 50px;
     border-radius: 25px;
-    background-color: ${theme.colors.backgroundBlackOpacity};
+    background-color: ${theme.colors.backgroundBlackSupport};
     margin: 0 ${theme.spacing.xs};
   `}
 `;

@@ -93,7 +93,10 @@ const SideBar = ({state, descriptors}: SideBarInterface) => {
 export default SideBar;
 
 const Wrapper = styled.View`
-  flex: 1;
+  ${({theme}) => css`
+    flex: 1;
+    background-color: ${theme.colors.backgroundBlackOpacity};
+  `}
 `;
 
 const Header = styled.View`
@@ -129,8 +132,8 @@ const MainItem = styled.TouchableOpacity<{isFocused?: boolean}>`
     align-items: center;
     justify-content: space-between;
     padding: ${theme.fontSize.xs} 0;
-    border-bottom-width: 1px;
-    border-color: ${theme.colors.backgroundBlackOpacity};
+    border-bottom-width: 0.5px;
+    border-color: ${theme.colors.backgroundBlackSupport};
 
     ${isFocused &&
     css`
