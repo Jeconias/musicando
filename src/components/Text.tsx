@@ -2,7 +2,6 @@ import React from 'react';
 import styled, {css} from 'styled-components';
 import {Text as TextBase, TextProps} from 'react-native';
 import {Size, ComponentWithChildrenInterface, Color} from '~/config/types';
-import {fonts} from './common';
 
 interface TextInterface
   extends ComponentWithChildrenInterface<string | JSX.Element>,

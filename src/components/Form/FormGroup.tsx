@@ -1,5 +1,6 @@
 import React from 'react';
 import {View} from 'react-native';
+import {TextInputMaskProps} from 'react-native-masked-text';
 import styled, {css} from 'styled-components/native';
 import Icon, {IconType} from '../Icon';
 import Input, {InputInterface} from './Input';
@@ -8,9 +9,16 @@ import SupportFeedback from './SupportFeedback';
 interface FormGroupInterface extends InputInterface {
   error?: string;
   icon?: IconType;
+  inputMaskProps?: TextInputMaskProps;
 }
 
-const FormGroup = ({error, icon, style, ...props}: FormGroupInterface) => {
+const FormGroup = ({
+  error,
+  icon,
+  style,
+  inputMaskProps,
+  ...props
+}: FormGroupInterface) => {
   return (
     <Wrapper style={style}>
       {icon && (
@@ -18,7 +26,12 @@ const FormGroup = ({error, icon, style, ...props}: FormGroupInterface) => {
           <Icon icon={icon} size="sm" />
         </WrapperIcon>
       )}
-      <InputStyled {...props} hasIcon={!!icon} error={!!error} />
+      <InputStyled
+        {...props}
+        {...inputMaskProps}
+        hasIcon={!!icon}
+        error={!!error}
+      />
       {error && <SupportFeedback>{error}</SupportFeedback>}
     </Wrapper>
   );

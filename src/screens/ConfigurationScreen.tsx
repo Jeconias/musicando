@@ -20,7 +20,13 @@ const ConfigurationScreen = () => {
         <Wrapper>
           <Content>
             <UserPhoto
-              source={require('../assets/imgs/profiles/default.jpg')}
+              source={
+                user?.photo
+                  ? {
+                      uri: user?.photo,
+                    }
+                  : require('../assets/imgs/profiles/default.jpg')
+              }
             />
             <Info>
               <UserName size="md">{user?.name ?? ''}</UserName>

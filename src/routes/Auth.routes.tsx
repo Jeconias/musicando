@@ -8,7 +8,11 @@ import ConfigurationScreen from '~/screens/ConfigurationScreen';
 import HomeScreen from '~/screens/HomeScreen';
 import OpportunitiesScreen from '~/screens/OpportunitiesScreen';
 
-const AuthStack = createBottomTabNavigator();
+type BottomTabNavigatorInterface = {
+  [key in AuthStackScreens]: any;
+};
+
+const AuthStack = createBottomTabNavigator<BottomTabNavigatorInterface>();
 
 const AuthRoutes = () => {
   const {to} = useNavigate();

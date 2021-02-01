@@ -15,38 +15,35 @@ import useDeviceDimension from '~/hooks/useDeviceDimension';
 import useNavigate from '~/hooks/useNavigate';
 import Animated, {Easing} from 'react-native-reanimated';
 import {AppStackScreens, RootStackScreens} from '~/config/types';
+import OpportunityCard from '~/components/Card/OpportunityCard';
 
 const DATABASE = [
   {
-    uuid: '1',
+    id: '1',
     name: 'Ruana Lima',
     description: 'Alguma descrição do usuário aqui para que descreva algo.',
     price: 1217,
   },
   {
-    uuid: '2',
-
+    id: '2',
     name: 'Marcos Lima',
     description: 'Alguma descrição do usuário aqui para que descreva algo.',
     price: 1205,
   },
   {
-    uuid: '3',
-
+    id: '3',
     name: 'Mario Lima',
     description: 'Alguma descrição do usuário aqui para que descreva algo.',
     price: 1250.21,
   },
   {
-    uuid: '4',
-
+    id: '4',
     name: 'José Lima',
     description: 'Alguma descrição do usuário aqui para que descreva algo.',
     price: 10.21,
   },
   {
-    uuid: '5',
-
+    id: '5',
     name: 'Você Lima',
     description: 'Alguma descrição do usuário aqui para que descreva algo.',
     price: 120.26,
@@ -93,43 +90,19 @@ const OpportunitiesScreen = () => {
   return (
     <SafeAreaView>
       <ContainerWithHeader
-        iconRight="filter"
-        onPressIconRight={handleSwipeAnimate}
+        iconRight={{
+          icon: 'filter',
+          onPress: handleSwipeAnimate,
+        }}
         title="Oportunidades">
         <FlatList
+          showsVerticalScrollIndicator={false}
           style={{
             paddingRight: 8,
           }}
           data={DATABASE}
-          keyExtractor={(item) => item.uuid}
-          renderItem={({item}) => (
-            <Card>
-              <Like>
-                <TouchableOpacity onPress={() => {}}>
-                  <Icon icon="heart" size="md" color="text" />
-                </TouchableOpacity>
-              </Like>
-              <CardButton onPress={handleOnSelected}>
-                <ImageStyled
-                  source={require('../assets/imgs/profiles/Marcos.png')}
-                />
-                <Content>
-                  <Text size="sm" color="primary">
-                    {item.name}
-                  </Text>
-                  <Description size="xs" color="text">
-                    {item.description}
-                  </Description>
-                  <WrapperPrice size="xs" color="text">
-                    Valor inicial de{' '}
-                    <Price size="xs" color="text">
-                      R$ {item.price.toString()}
-                    </Price>
-                  </WrapperPrice>
-                </Content>
-              </CardButton>
-            </Card>
-          )}
+          keyExtractor={(item) => item.id}
+          renderItem={({item}) => <OpportunityCard {...(item as any)} />}
         />
         <PanGestureHandler onHandlerStateChange={handleGesture}>
           <Filter
@@ -208,55 +181,5 @@ const CircledOption = styled.TouchableOpacity`
     border-radius: 25px;
     background-color: ${theme.colors.backgroundBlackOpacity};
     margin: 0 ${theme.spacing.xs};
-  `}
-`;
-
-const Card = styled(View)`
-  ${({theme}) => css`
-    position: relative;
-    padding: ${theme.spacing.xs} ${theme.spacing.sm};
-    border: 2px solid ${theme.colors.backgroundBlackSupport};
-    border-radius: 4px;
-    margin-bottom: ${theme.spacing.sm};
-  `}
-`;
-
-const CardButton = styled.TouchableOpacity`
-  flex-direction: row;
-  align-items: center;
-`;
-
-const ImageStyled = styled(Image)`
-  width: 64px;
-  height: 64px;
-  border-radius: 32px;
-  margin-right: ${({theme}) => theme.spacing.sm};
-`;
-
-const Content = styled(View)`
-  position: relative;
-  flex-shrink: 1;
-`;
-
-const Description = styled(Text)`
-  ${({theme}) => css`
-    margin-bottom: ${theme.spacing.xs};
-    padding-right: ${theme.spacing.sm};
-    ${fonts.RubikLight};
-  `}
-`;
-
-const WrapperPrice = styled(Text)``;
-
-const Price = styled(Text)`
-  ${fonts.RubikMedium};
-`;
-
-const Like = styled(View)`
-  ${({theme}) => css`
-    position: absolute;
-    top: ${theme.spacing.xs};
-    right: ${theme.spacing.sm};
-    z-index: 2;
   `}
 `;

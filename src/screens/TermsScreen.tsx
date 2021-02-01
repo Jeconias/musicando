@@ -10,8 +10,10 @@ const TermsScreen = () => {
   return (
     <SafeAreaView>
       <ContainerWithHeader
-        iconLeft="arrowLeft"
-        onPressIconLeft={goBack}
+        iconLeft={{
+          icon: 'arrowLeft',
+          onPress: goBack,
+        }}
         title="Termos">
         <Text>...</Text>
       </ContainerWithHeader>

@@ -2,15 +2,17 @@ import React from 'react';
 import {TextInput, TextInputProps} from 'react-native';
 import styled, {css} from 'styled-components';
 
-export interface InputInterface extends TextInputProps {}
+export interface InputInterface extends TextInputProps {
+  tag?: React.ElementType;
+}
 
-const Input = ({...props}: InputInterface) => {
-  return <TextInputStyled {...props} />;
-};
+const Input = ({...props}: InputInterface) => <TextInputStyled {...props} />;
 
 export default Input;
 
-const TextInputStyled = styled(TextInput)`
+const TextInputStyled = styled(({tag: Tag, ...props}) =>
+  Tag ? <Tag {...props} /> : <TextInput {...props} />,
+)`
   ${({theme}) => css`
     padding: ${theme.spacing.xs} ${theme.spacing.sm} ${theme.spacing.xs} 0;
     font-size: ${theme.fontSize.sm};

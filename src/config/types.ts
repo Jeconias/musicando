@@ -16,6 +16,7 @@ export type LoadingStatus = 'idle' | 'loading' | 'ok' | 'error';
 export enum RootStackScreens {
   AppStack = 'AppStack',
   AuthStack = 'AuthStack',
+  DrawerStack = 'DrawerStack',
   ModalRegister = 'ModalRegister',
   ModalTerms = 'ModalTerms',
 }
@@ -35,9 +36,19 @@ export enum AuthStackScreens {
   Configs = 'AuthStack:Configs',
 }
 
+export enum DrawerStackScreens {
+  Home = 'DrawerStack:Home',
+  Event = 'DrawerStack:Event',
+}
+
+export enum EventStackScreens {
+  List = 'Event:List',
+  Create = 'Event:Create',
+}
+
 export type Response = {
   status: boolean;
-  message: string;
+  message?: string;
 };
 
 export type RequestError<T = Response> = AxiosError<T>;

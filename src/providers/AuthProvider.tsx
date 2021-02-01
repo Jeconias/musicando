@@ -11,6 +11,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {STORAGE_PREFIX, TOKEN_STORAGE_KEY} from '~/config/constants';
 import {User} from '~/core/entity/user';
 import {isEmpty, merge} from 'lodash';
+import useReduxDispatch from '~/hooks/useReduxDispatch';
+import {cleanAction} from '~/core/store/actions/utils';
 
 export interface AuthContextInterface {
   user?: User;
@@ -28,6 +30,7 @@ export const AuthContext = createContext<AuthContextInterface>(
 const userStorageKey = `${STORAGE_PREFIX}:user`;
 
 const AuthProvider = ({children}: ComponentWithChildrenInterface) => {
+  const dispatch = useReduxDispatch();
   const [loading, setLoading] = useState<LoadingStatus>('idle');
   const [user, setUser] = useState<User>();
 
@@ -100,11 +103,12 @@ const AuthProvider = ({children}: ComponentWithChildrenInterface) => {
           console.error('Logout Error - ', error);
         } else {
           setUser(undefined);
+          dispatch(cleanAction());
         }
         setLoading('ok');
       },
     );
-  }, []);
+  }, [dispatch]);
 
   const handleUpdate = useCallback(
     (data: Partial<User>) => setUser((prev) => ({...prev, ...(data as User)})),

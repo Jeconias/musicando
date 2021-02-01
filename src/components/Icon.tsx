@@ -1,10 +1,12 @@
 import React from 'react';
 import {THEME} from '~/config/constants';
 import {Size} from '~/config/types';
+import styled, {css, useTheme} from 'styled-components';
 
 import MapSVG from '../assets/svgs/background-world.svg';
 import WorldSVG from '../assets/svgs/world.svg';
 import LocationSVG from '../assets/svgs/location.svg';
+import LocationBigSVG from '../assets/svgs/local-two.svg';
 import ArrowRightSVG from '../assets/svgs/right.svg';
 import ArrowLeftSVG from '../assets/svgs/left.svg';
 import CloseSVG from '../assets/svgs/close.svg';
@@ -21,11 +23,17 @@ import MusicSVG from '../assets/svgs/music.svg';
 import EventSVG from '../assets/svgs/event.svg';
 import StarSVG from '../assets/svgs/star.svg';
 import MoneySVG from '../assets/svgs/money.svg';
-import styled, {css, useTheme} from 'styled-components';
+import SytemSVG from '../assets/svgs/system.svg';
+import TicketSVG from '../assets/svgs/ticket.svg';
+import EventSimpleSVG from '../assets/svgs/event-simple.svg';
+import GlassCupSVG from '../assets/svgs/glass-cup.svg';
+import PlusSVG from '../assets/svgs/plus.svg';
+import CommentSVG from '../assets/svgs/comment.svg';
 
 const ICONS = {
   map: MapSVG,
   location: LocationSVG,
+  locationBig: LocationBigSVG,
   arrowRight: ArrowRightSVG,
   arrowLeft: ArrowLeftSVG,
   close: CloseSVG,
@@ -43,6 +51,12 @@ const ICONS = {
   star: StarSVG,
   money: MoneySVG,
   world: WorldSVG,
+  system: SytemSVG,
+  ticket: TicketSVG,
+  eventSimple: EventSimpleSVG,
+  glassCup: GlassCupSVG,
+  plus: PlusSVG,
+  comment: CommentSVG,
 };
 
 const SIZES = {

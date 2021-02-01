@@ -2,42 +2,45 @@ import React from 'react';
 import {View} from 'react-native';
 import {TouchableProps} from 'react-native-svg';
 import styled, {css} from 'styled-components/native';
+import {Color} from '~/config/types';
 import Icon, {IconType} from '../Icon';
 import Text from '../Text';
 import {default as ContainerBase, ContainerProps} from './Container';
 
+type IconHeader = {
+  icon?: IconType;
+  backgroundColor?: Color;
+  onPress?(): void;
+};
+
 interface ContainerWithIconInterface extends ContainerProps, TouchableProps {
-  iconRight?: IconType;
-  iconLeft?: IconType;
+  iconRight?: IconHeader;
+  iconLeft?: IconHeader;
   title?: string;
-  onPressIconRight?(): void;
-  onPressIconLeft?(): void;
 }
 
 const ContainerWithHeader = ({
   children,
   iconRight,
   iconLeft,
-  onPressIconRight,
-  onPressIconLeft,
   title,
   ...props
 }: ContainerWithIconInterface) => (
   <Container {...props}>
     <Wrapper>
       <Header>
-        {iconLeft && (
-          <CloseButton onPress={onPressIconLeft}>
-            <BackgroundIcon withBackground>
-              <Icon icon={iconLeft} size="sm" />
+        {iconLeft?.icon && (
+          <CloseButton onPress={iconLeft.onPress}>
+            <BackgroundIcon backgroundColor={iconLeft.backgroundColor}>
+              <Icon icon={iconLeft.icon} size="sm" />
             </BackgroundIcon>
           </CloseButton>
         )}
         {title && <Text size="md">{title}</Text>}
-        {iconRight && (
-          <CloseButton onPress={onPressIconRight}>
-            <BackgroundIcon>
-              <Icon icon={iconRight} />
+        {iconRight?.icon && (
+          <CloseButton onPress={iconRight.onPress}>
+            <BackgroundIcon backgroundColor={iconRight.backgroundColor}>
+              <Icon icon={iconRight.icon} />
             </BackgroundIcon>
           </CloseButton>
         )}
@@ -69,8 +72,8 @@ const CloseButton = styled.TouchableOpacity`
   z-index: 5;
 `;
 
-const BackgroundIcon = styled(View)<{withBackground?: boolean}>`
-  ${({theme, withBackground}) => css`
+const BackgroundIcon = styled(View)<{backgroundColor?: Color}>`
+  ${({theme, backgroundColor}) => css`
     display: flex;
     align-items: center;
     justify-content: center;
@@ -78,9 +81,9 @@ const BackgroundIcon = styled(View)<{withBackground?: boolean}>`
     width: 32px;
     height: 32px;
 
-    ${withBackground &&
+    ${backgroundColor &&
     css`
-      background-color: ${theme.colors.primary};
+      background-color: ${theme.colors[backgroundColor]};
     `}
   `}
 `;

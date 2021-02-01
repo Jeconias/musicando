@@ -12,7 +12,11 @@ import OpportunitiesScreen from '~/screens/OpportunitiesScreen';
 import UserProfileScreen from '~/screens/UserProfileScreen';
 import {AppStackScreens} from '~/config/types';
 
-const AppStack = createStackNavigator();
+type StackNavigatorInterface = {
+  [key in AppStackScreens]: any;
+};
+
+const AppStack = createStackNavigator<StackNavigatorInterface>();
 
 const AppRoutes = () => {
   const {isFirstAccess} = useLoad();

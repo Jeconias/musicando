@@ -1,5 +1,8 @@
-String.capitalize = function () {
-  return 'aaa';
-};
+import {capitalize} from 'lodash';
 
-export default {};
+export const capitalizeByIndex = (str: string, index: number) => {
+  const s = str.split('');
+  if (index < 0 || index > s.length - 1) return str;
+  s[index] = capitalize(s[index]);
+  return s.join('');
+};

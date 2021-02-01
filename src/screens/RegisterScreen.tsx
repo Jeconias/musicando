@@ -3,7 +3,7 @@ import CheckBox from '@react-native-community/checkbox';
 import DateTimePicker, {
   WindowsDatePickerChangeEvent,
 } from '@react-native-community/datetimepicker';
-import {differenceInYears} from 'date-fns';
+import {differenceInYears, subYears} from 'date-fns';
 import {capitalize} from 'lodash';
 import React, {useCallback, useEffect, useState} from 'react';
 import {Controller, useForm} from 'react-hook-form';
@@ -33,7 +33,9 @@ import useFeedback from '~/hooks/useFeedback';
 import useNavigate from '~/hooks/useNavigate';
 import useTheme from '~/hooks/useTheme';
 import {format} from '~/utils/date';
+import {capitalizeByIndex} from '~/utils/string';
 
+const today = new Date();
 interface FormData {
   name: string;
   email: string;
@@ -110,7 +112,7 @@ const RegisterScreen = () => {
     defaultValues: defaultValues,
   });
 
-  const {terms, userType} = watch();
+  const {terms, userType, birthdate} = watch();
 
   const handleDatePicker = useCallback(
     (_: WindowsDatePickerChangeEvent, date?: Date) => {
@@ -186,6 +188,7 @@ const RegisterScreen = () => {
   useEffect(() => {
     register('terms');
     register('userType');
+    register('birthdate');
   }, [register]);
 
   return (
@@ -226,37 +229,23 @@ const RegisterScreen = () => {
               />
             )}
           />
-          <Controller
-            name="birthdate"
-            defaultValue=""
-            control={control}
-            render={({onBlur, value}: {value?: Date; onBlur: any}) => {
-              const formattedDate = value ? format(value, 'dd MMMM yyyy') : '';
-              const splittedDate = formattedDate.split(' ');
-              const date =
-                splittedDate.length > 2
-                  ? `${splittedDate[0]} ${capitalize(splittedDate[1])} ${
-                      splittedDate[2]
-                    }`
-                  : '';
 
-              return (
-                <FormGroup
-                  onFocus={() => {
-                    Keyboard.dismiss();
-                    setShowDateTimePicker(true);
-                  }}
-                  onBlur={onBlur}
-                  value={date}
-                  placeholder="Data de Nascimento"
-                  placeholderTextColor={theme.colors.text}
-                  showSoftInputOnFocus={false}
-                  icon="calendar"
-                  error={errors?.birthdate?.message}
-                />
-              );
+          <FormGroup
+            value={`${capitalizeByIndex(
+              format(birthdate ?? today, 'dd MMMM yyyy'),
+              3,
+            )}`}
+            onFocus={() => {
+              Keyboard.dismiss();
+              setShowDateTimePicker(true);
             }}
+            placeholder="Data de Nascimento"
+            placeholderTextColor={theme.colors.text}
+            showSoftInputOnFocus={false}
+            icon="calendar"
+            error={errors?.birthdate?.message}
           />
+
           <Controller
             name="password"
             defaultValue=""
@@ -325,11 +314,12 @@ const RegisterScreen = () => {
 
           {showDateTimePicker && (
             <DateTimePicker
-              value={new Date()}
+              value={birthdate}
               mode="date"
               is24Hour={true}
               display="default"
               onChange={handleDatePicker as any}
+              maximumDate={subYears(today, 18)}
             />
           )}
         </Form>

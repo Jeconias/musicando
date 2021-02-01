@@ -5,7 +5,6 @@ import {View} from 'react-native';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import styled, {css, useTheme} from 'styled-components/native';
 import * as yup from 'yup';
-import {authentication} from '~/core/api/api.auth';
 import ButtonNormal from '~/components/Button/ButtonNormal';
 import ButtonText from '~/components/Button/ButtonText';
 import {fonts, SafeAreaView} from '~/components/common';
@@ -23,6 +22,8 @@ import {
 import useNavigate from '~/hooks/useNavigate';
 import useAuth from '~/hooks/useAuth';
 import useFeedback from '~/hooks/useFeedback';
+import api from '~/core/api';
+import {ENVIRONMENT} from '~/config/constants';
 
 interface FormData {
   email: string;
@@ -61,7 +62,7 @@ const LoginScreen = () => {
     resolver: yupResolver(schema),
     defaultValues: {
       email: user?.email ?? '',
-      password: '',
+      password: ENVIRONMENT.isDev ? '@Senha123' : '',
     },
   });
 
@@ -72,7 +73,7 @@ const LoginScreen = () => {
       setLoading('loading');
 
       try {
-        const resp = await authentication(data);
+        const resp = await api.auth.authentication(data);
         if (resp.data.status) {
           handleOnSuccess(resp.data);
         } else {

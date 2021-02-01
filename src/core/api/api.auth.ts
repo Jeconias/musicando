@@ -14,5 +14,9 @@ export interface AuthenticationResponse extends Response {
   };
 }
 
-export const authentication = (data: AuthenticationRequest) =>
+const authentication = (data: AuthenticationRequest) =>
   APIbase.post<AuthenticationResponse>('/auth', data);
+
+export default {
+  authentication,
+};

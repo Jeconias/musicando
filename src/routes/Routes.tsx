@@ -8,9 +8,13 @@ import useAuth from '~/hooks/useAuth';
 import RegisterScreen from '~/screens/RegisterScreen';
 import TermsScreen from '~/screens/TermsScreen';
 import AppRoutes from './App.routes';
-import AuthRoutes from './Auth.routes';
+import DrawerRoutes from './Drawer.routes';
 
-const RootStack = createStackNavigator();
+type StackNavigatorInterface = {
+  [key in RootStackScreens]: any;
+};
+
+const RootStack = createStackNavigator<StackNavigatorInterface>();
 
 const Routes = () => {
   const {isAuthenticated} = useAuth();
@@ -18,7 +22,9 @@ const Routes = () => {
   return (
     <RootStack.Navigator
       initialRouteName={
-        isAuthenticated ? RootStackScreens.AuthStack : RootStackScreens.AppStack
+        isAuthenticated
+          ? RootStackScreens.DrawerStack
+          : RootStackScreens.AppStack
       }
       screenOptions={{
         headerShown: false,
@@ -28,8 +34,8 @@ const Routes = () => {
         component={AppRoutes}
       />
       <RootStack.Screen
-        name={RootStackScreens.AuthStack}
-        component={AuthRoutes}
+        name={RootStackScreens.DrawerStack}
+        component={DrawerRoutes}
       />
       <RootStack.Screen
         name={RootStackScreens.ModalRegister}

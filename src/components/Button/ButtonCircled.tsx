@@ -1,15 +1,20 @@
 import React from 'react';
 import styled, {css} from 'styled-components';
 import {TouchableOpacity} from 'react-native-gesture-handler';
-import Icon from '../Icon';
+import Icon, {IconType} from '../Icon';
 import {TouchableOpacityProps} from 'react-native';
 
-interface ButtonCircledInterface extends TouchableOpacityProps {}
+interface ButtonCircledInterface extends TouchableOpacityProps {
+  icon?: IconType;
+}
 
-const ButtonCircled = ({...props}: ButtonCircledInterface) => {
+const ButtonCircled = ({
+  icon = 'arrowRight',
+  ...props
+}: ButtonCircledInterface) => {
   return (
     <TouchableOpacityStyled {...props}>
-      <Icon icon="arrowRight" size="md" />
+      <Icon icon={icon} size="md" />
     </TouchableOpacityStyled>
   );
 };

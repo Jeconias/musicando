@@ -1,3 +1,4 @@
+import {useIsDrawerOpen} from '@react-navigation/drawer';
 import {addDays, subDays} from 'date-fns';
 import {capitalize} from 'lodash';
 import {math, rgba} from 'polished';
@@ -21,7 +22,7 @@ import {format} from '~/utils/date';
 const today = new Date();
 
 const HomeScreen = () => {
-  const {to} = useNavigate();
+  const {to, toggleDrawer} = useNavigate();
   const {width, height} = useDeviceDimension();
 
   const handleGesture = useCallback(
@@ -41,7 +42,13 @@ const HomeScreen = () => {
 
   return (
     <SafeAreaView>
-      <ContainerWithHeader iconLeft="sound" title="Dashboard">
+      <ContainerWithHeader
+        iconLeft={{
+          icon: 'system',
+          backgroundColor: 'backgroundBlackSupport',
+          onPress: toggleDrawer,
+        }}
+        title="Dashboard">
         <HeaderBackground width={width} height={height}>
           {new Array(5).fill(null).map((_, k) => {
             const calc = 2 - k;

@@ -14,8 +14,7 @@ const UserProfileScreen = () => {
   return (
     <SafeAreaView>
       <ContainerWithHeader
-        iconLeft="arrowLeft"
-        onPressIconLeft={goBack}
+        iconLeft={{icon: 'arrowLeft', onPress: goBack}}
         title="Perfil">
         <ScrollView>
           <UserInfos>
