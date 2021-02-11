@@ -2,6 +2,7 @@ import React from 'react';
 import {TouchableOpacity, View} from 'react-native';
 import styled, {css} from 'styled-components/native';
 import {fonts} from '../common';
+import DefaultImage from '../Default/DefaultImage';
 import Icon from '../Icon';
 import Text from '../Text';
 
@@ -28,13 +29,12 @@ const OpportunityCard = ({onSelect, ...props}: OpportunityCardInterface) => (
       onPress={() => {
         if (onSelect) onSelect(props);
       }}>
-      <ImageStyled
-        source={
-          props.image
-            ? {uri: props.image}
-            : require('../../assets/imgs/profiles/Marcos.png')
-        }
-      />
+      {!!props?.image && <ImageStyled source={{uri: props.image}} />}
+      {!props?.image && (
+        <DefaultImage>
+          <Icon icon="event" size="md" color="text" />
+        </DefaultImage>
+      )}
       <Content>
         <Text size="sm" color="white">
           {props.title}

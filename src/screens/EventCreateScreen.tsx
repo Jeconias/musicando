@@ -17,14 +17,21 @@ import {Keyboard} from 'react-native';
 import ButtonNormal from '~/components/Button/ButtonNormal';
 import Loading from '~/components/Loading/Loading';
 import {MaskService, TextInputMask} from 'react-native-masked-text';
-import {ScrollView} from 'react-native-gesture-handler';
+import {
+  RotationGestureHandler,
+  ScrollView,
+  TouchableOpacity,
+} from 'react-native-gesture-handler';
 import useFeedback from '~/hooks/useFeedback';
 import {addDays} from 'date-fns/esm';
-import {capitalizeByIndex} from '~/utils/string';
+import {capitalizeByIndex, uriToBlob} from '~/utils/string';
 import useReduxDispatch from '~/hooks/useReduxDispatch';
 import {eventCreateAsyncThunk} from '~/core/store/actions/event';
 import useReduxSelector from '~/hooks/useReduxSelector';
 import {addEvent} from '~/core/store/actions/user';
+import {launchImageLibrary} from 'react-native-image-picker';
+import useFirebase from '~/hooks/useFirebase';
+import Icon from '~/components/Icon';
 
 const today = new Date();
 
@@ -35,6 +42,7 @@ interface FormData {
   address: string;
   date?: Date;
   hour?: Date;
+  cover?: string;
 }
 
 const schema = yup.object().shape({
@@ -76,6 +84,7 @@ const defaultValues: FormData = ENVIRONMENT.isDev
       address: 'Endereço de teste, 375',
       date: addDays(today, 1),
       hour: today,
+      cover: undefined,
     }
   : {
       title: '',
@@ -84,6 +93,7 @@ const defaultValues: FormData = ENVIRONMENT.isDev
       address: '',
       date: undefined,
       hour: undefined,
+      cover: undefined,
     };
 
 const EventCreateScreen = () => {
@@ -91,8 +101,12 @@ const EventCreateScreen = () => {
   const {theme} = useTheme();
   const {goBack} = useNavigate();
   const {feedback} = useFeedback();
+  const {
+    event: {updateCover},
+  } = useFirebase();
 
   const loading = useReduxSelector((state) => state.event.create.loading);
+  const isLoading = loading === 'loading';
 
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
@@ -111,7 +125,7 @@ const EventCreateScreen = () => {
     defaultValues: defaultValues,
   });
 
-  const {date, hour} = watch();
+  const {date, hour, cover} = watch();
 
   const handleDatePicker = useCallback(
     (_: WindowsDatePickerChangeEvent, dateTime?: Date) => {
@@ -132,6 +146,54 @@ const EventCreateScreen = () => {
       setShowTimePicker,
     ],
   );
+
+  const launchImageLibraryCallback = useCallback(() => {
+    if (isLoading) return;
+
+    //TODO(Jevonias): Solve it. Refactor.
+    if (cover) {
+      setValue('cover', undefined, {shouldDirty: true});
+      feedback({
+        message: 'Imagem removida.',
+        type: 'info',
+      });
+      return;
+    }
+
+    launchImageLibrary(
+      {
+        mediaType: 'photo',
+        includeBase64: false,
+        quality: 0.9,
+      },
+      (resp) => {
+        if (resp.didCancel) {
+          //TODO(Jeconias): Solve it.
+        } else if (resp.errorCode) {
+          //TODO(Jeconias): Solve it.
+          if (resp.errorCode === 'camera_unavailable') {
+            feedback({
+              message: 'Ops! A câmera não está disponível no momento.',
+              type: 'warning',
+            });
+          } else if (resp.errorCode === 'permission') {
+            feedback({
+              message:
+                'Ops! tivemos um erro de permissão ao tentar acessar a câmera.',
+              type: 'danger',
+            });
+          } else {
+            feedback({
+              message: 'Ops! tivemos um erro inesperado.',
+              type: 'danger',
+            });
+          }
+        } else {
+          setValue('cover', resp.uri, {shouldDirty: true});
+        }
+      },
+    );
+  }, [setValue, cover, isLoading, feedback]);
 
   const onSubmit = useCallback(
     async (data: FormData) => {
@@ -156,7 +218,22 @@ const EventCreateScreen = () => {
           message: 'Evento cadastro com sucesso.',
           type: 'success',
         });
-        reset(defaultValues);
+        uriToBlob(data.cover)
+          .then((blob) => {
+            updateCover(resp.payload.data.uuidEvent, {
+              file: blob,
+              metadata: {
+                contentType: resp.type ?? '',
+              },
+            })?.catch((e) => {
+              //TODO(Jeconias): Solve it.
+              console.log(e);
+            });
+          })
+          .catch((e) => {
+            console.log(e);
+            //TODO(Jeconias): Solve it.
+          });
         dispatch(
           addEvent({
             uuid: resp.payload.data.uuidEvent,
@@ -164,21 +241,23 @@ const EventCreateScreen = () => {
             description: data.description,
             address: data.address,
             value_ref: data.valueRef,
+            cover: data.cover,
             date: date,
           }),
         );
+        reset(defaultValues);
         goBack();
       }
     },
-    [feedback, dispatch, reset, goBack],
+    [feedback, dispatch, reset, updateCover, goBack],
   );
 
-  const isLoading = loading === 'loading';
   const hasError = !!Object.keys(errors).length;
 
   useEffect(() => {
     register('date');
     register('hour');
+    register('cover');
   }, [register]);
 
   return (
@@ -192,7 +271,12 @@ const EventCreateScreen = () => {
         title="Novo Evento">
         <ScrollView showsVerticalScrollIndicator={false}>
           <Form>
-            <Image source={require('../assets/imgs/profiles/default.jpg')} />
+            <ImageWrapper onPress={launchImageLibraryCallback}>
+              {!cover && (
+                <Icon icon="camera" size="xl" color="backgroundBlackSupport" />
+              )}
+              {cover && <Image source={{uri: cover}} />}
+            </ImageWrapper>
             <Controller
               name="title"
               control={control}
@@ -322,11 +406,23 @@ const CustomButtonNormal = styled(ButtonNormal)`
   `}
 `;
 
-const Image = styled.Image`
+const ImageWrapper = styled.TouchableOpacity`
   ${({theme}) => css`
+    position: relative;
+    align-items: center;
+    justify-content: center;
     width: 100%;
     height: ${Math.ceil((17 / 100) * theme.device.dimensions.window.height)}px;
     margin-bottom: ${theme.spacing.sm};
+    background-color: ${theme.colors.backgroundBlackOpacity};
+    border-radius: 5px;
+  `}
+`;
+
+const Image = styled.Image`
+  ${({theme}) => css`
+    width: 100%;
+    height: 100%;
     border-radius: 5px;
   `}
 `;

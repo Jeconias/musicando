@@ -314,7 +314,7 @@ const RegisterScreen = () => {
 
           {showDateTimePicker && (
             <DateTimePicker
-              value={birthdate}
+              value={birthdate ?? today}
               mode="date"
               is24Hour={true}
               display="default"

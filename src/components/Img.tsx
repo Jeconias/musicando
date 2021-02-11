@@ -1,14 +1,14 @@
 import React from 'react';
-import {Image, ImageProps} from 'react-native';
-import styled from 'styled-components';
+import {ImageProps} from 'react-native';
+import styled from 'styled-components/native';
 
-interface Img extends ImageProps {}
+export interface ImgInterface extends ImageProps {}
 
-const Img = ({...props}: Img) => <ImageStyled {...props} />;
+const Img = ({...props}: ImgInterface) => <ImageStyled {...props} />;
 
 export default Img;
 
-const ImageStyled = styled(Image)`
+const ImageStyled = styled.Image`
   width: 90px;
   height: 90px;
   border-radius: 45px;

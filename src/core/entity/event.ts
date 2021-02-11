@@ -3,6 +3,7 @@ export interface Event {
   title: string;
   description: string;
   value_ref: number;
+  cover?: string;
   tags: [];
   proposals: [];
   midias: [];

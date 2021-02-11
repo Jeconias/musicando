@@ -27,7 +27,7 @@ const WelcomeNetworkingScreen = () => {
           style={{resizeMode: 'cover'}}
         />
         <Summary
-          title="Artistas"
+          title="Conexão"
           description="Aumente sua networking mostrando o seu talento"
           current={3}
           nextPage={nextPage}

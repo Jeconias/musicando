@@ -29,6 +29,7 @@ import EventSimpleSVG from '../assets/svgs/event-simple.svg';
 import GlassCupSVG from '../assets/svgs/glass-cup.svg';
 import PlusSVG from '../assets/svgs/plus.svg';
 import CommentSVG from '../assets/svgs/comment.svg';
+import CameraSVG from '../assets/svgs/camera.svg';
 
 const ICONS = {
   map: MapSVG,
@@ -57,12 +58,14 @@ const ICONS = {
   glassCup: GlassCupSVG,
   plus: PlusSVG,
   comment: CommentSVG,
+  camera: CameraSVG,
 };
 
 const SIZES = {
   sm: 16,
   md: 24,
   lg: 32,
+  xl: 40,
 };
 
 export type IconType = keyof typeof ICONS;

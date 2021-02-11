@@ -6,3 +6,6 @@ export const capitalizeByIndex = (str: string, index: number) => {
   s[index] = capitalize(s[index]);
   return s.join('');
 };
+
+export const uriToBlob = async (uri?: string) =>
+  (await fetch(uri ?? '')).blob();

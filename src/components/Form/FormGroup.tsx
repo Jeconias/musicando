@@ -1,8 +1,10 @@
 import React from 'react';
-import {View} from 'react-native';
+import {Button, View} from 'react-native';
 import {TextInputMaskProps} from 'react-native-masked-text';
 import styled, {css} from 'styled-components/native';
+import ButtonText from '../Button/ButtonText';
 import Icon, {IconType} from '../Icon';
+import Text from '../Text';
 import Input, {InputInterface} from './Input';
 import SupportFeedback from './SupportFeedback';
 

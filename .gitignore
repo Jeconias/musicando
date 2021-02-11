@@ -29,6 +29,7 @@ build/
 local.properties
 *.iml
 .env
+.env.test
 .env.production
 
 # Visual Studio Code
