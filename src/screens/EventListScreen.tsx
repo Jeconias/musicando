@@ -5,6 +5,7 @@ import ButtonCircled from '~/components/Button/ButtonCircled';
 import OpportunityCard from '~/components/Card/OpportunityCard';
 import {SafeAreaView} from '~/components/common';
 import Feedback from '~/components/Feedback/Feedback';
+import FeedBackError from '~/components/Feedback/FeedBackError';
 import ContainerWithHeader from '~/components/Layout/ContainerWithHeader';
 import Loading from '~/components/Loading/Loading';
 import {EventStackScreens, LoadingStatus, RequestError} from '~/config/types';
@@ -89,13 +90,16 @@ const EventListScreen = () => {
           onPress: toggleDrawer,
         }}
         title="Seus Eventos">
+        {loading === 'error' && (!events || events.length === 0) && (
+          <FeedBackError />
+        )}
         {loading === 'ok' && events.length === 0 && (
           <Feedback
-            title="Sem Eventos"
-            text="Nenhum evento foi cadastrado ainda."
+            title="Sem Eventos 😪"
+            text="Nenhum evento foi cadastrado."
           />
         )}
-        {(loading !== 'ok' || localLoading !== 'ok') && <Loading />}
+        {(loading === 'loading' || localLoading === 'loading') && <Loading />}
         {loading === 'ok' && localLoading === 'ok' && events.length !== 0 && (
           <FlatList
             showsVerticalScrollIndicator={false}
@@ -107,7 +111,7 @@ const EventListScreen = () => {
                 title={item.title}
                 description={item.description}
                 image={item?.cover || eventsCover[item.uuid] || ''}
-                price={item.value_ref}
+                price={item.value_ref ?? 0}
               />
             )}
           />

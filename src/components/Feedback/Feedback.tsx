@@ -1,4 +1,3 @@
-import {math} from 'polished';
 import React from 'react';
 import styled, {css} from 'styled-components/native';
 import Text from '../Text';
@@ -10,10 +9,12 @@ interface FeedbackInterface {
 
 const Feedback = ({title, text}: FeedbackInterface) => (
   <ViewStyled>
-    <Text size="md" marginBottom="xxs">
+    <Text size="sm" marginBottom="xxs" textAlign="center">
       {title}
     </Text>
-    <Text size="xs">{text}</Text>
+    <Text size="xs" textAlign="center" color="text">
+      {text}
+    </Text>
   </ViewStyled>
 );
 
@@ -23,6 +24,6 @@ const ViewStyled = styled.View`
   ${({theme}) => css`
     flex: 1;
     align-items: center;
-    padding-top: ${(theme.device.dimensions.window.height / 100) * 25}px;
+    justify-content: center;
   `}
 `;

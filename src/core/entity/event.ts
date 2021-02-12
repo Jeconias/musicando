@@ -2,7 +2,9 @@ export interface Event {
   uuid: string;
   title: string;
   description: string;
-  value_ref: number;
+  /** @deprecated */
+  value_ref?: number;
+  valueRef?: number;
   cover?: string;
   tags: [];
   proposals: [];

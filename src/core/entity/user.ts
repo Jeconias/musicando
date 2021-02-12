@@ -4,7 +4,9 @@ import {Event} from './event';
 export interface User {
   uuid: string;
   name: string;
+  /**@deprecated */
   nick_name?: string;
+  nickName?: string;
   email: string;
   photo?: string;
   tags: [];

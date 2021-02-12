@@ -1,6 +1,7 @@
 import React from 'react';
 import {TouchableOpacity, View} from 'react-native';
 import styled, {css} from 'styled-components/native';
+import {EntityType} from '~/core/entity/common';
 import {fonts} from '../common';
 import DefaultImage from '../Default/DefaultImage';
 import Icon from '../Icon';
@@ -12,13 +13,18 @@ interface Card {
   description: string;
   price: number;
   image: string;
+  type?: EntityType;
 }
 
 interface OpportunityCardInterface extends Card {
   onSelect?(item: Card): void;
 }
 
-const OpportunityCard = ({onSelect, ...props}: OpportunityCardInterface) => (
+const OpportunityCard = ({
+  onSelect,
+  type = EntityType.EVENT,
+  ...props
+}: OpportunityCardInterface) => (
   <Card>
     <Like>
       <TouchableOpacity onPress={() => {}}>
@@ -32,7 +38,11 @@ const OpportunityCard = ({onSelect, ...props}: OpportunityCardInterface) => (
       {!!props?.image && <ImageStyled source={{uri: props.image}} />}
       {!props?.image && (
         <DefaultImage>
-          <Icon icon="event" size="md" color="text" />
+          <Icon
+            icon={type === EntityType.EVENT ? 'event' : 'user'}
+            size="md"
+            color="text"
+          />
         </DefaultImage>
       )}
       <Content>
@@ -40,14 +50,18 @@ const OpportunityCard = ({onSelect, ...props}: OpportunityCardInterface) => (
           {props.title}
         </Text>
         <Description size="xs" color="text">
-          {props.description}
+          {props.description.length > 94
+            ? `${props.description.substr(0, 95)}...`
+            : props.description}
         </Description>
-        <WrapperPrice size="xs" color="white">
-          Valor inicial de{' '}
-          <Price size="xs" color="primary">
-            R$ {props.price.toString()}
-          </Price>
-        </WrapperPrice>
+        {!!props.price && (
+          <WrapperPrice size="xs" color="white">
+            Valor inicial de{' '}
+            <Price size="xs" color="primary">
+              R$ {props.price.toString()}
+            </Price>
+          </WrapperPrice>
+        )}
       </Content>
     </CardButton>
   </Card>
@@ -84,7 +98,7 @@ const Content = styled(View)`
 
 const Description = styled(Text)`
   ${({theme}) => css`
-    margin-bottom: ${theme.spacing.xs};
+    margin-bottom: ${theme.spacing.sm};
     padding-right: ${theme.spacing.sm};
     ${fonts.RubikLight};
   `}

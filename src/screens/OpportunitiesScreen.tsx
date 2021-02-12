@@ -1,57 +1,20 @@
-import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
-import {FlatList, Image, View} from 'react-native';
+import React, {useCallback, useMemo, useRef, useState} from 'react';
 import {
   PanGestureHandler,
   PanGestureHandlerStateChangeEvent,
-  TouchableOpacity,
   State,
 } from 'react-native-gesture-handler';
+import Animated, {Easing} from 'react-native-reanimated';
 import styled, {css} from 'styled-components/native';
-import {fonts, SafeAreaView} from '~/components/common';
+import {SafeAreaView} from '~/components/common';
 import Icon from '~/components/Icon';
 import ContainerWithHeader from '~/components/Layout/ContainerWithHeader';
 import Text from '~/components/Text';
 import useDeviceDimension from '~/hooks/useDeviceDimension';
-import useNavigate from '~/hooks/useNavigate';
-import Animated, {Easing} from 'react-native-reanimated';
-import {AppStackScreens, RootStackScreens} from '~/config/types';
-import OpportunityCard from '~/components/Card/OpportunityCard';
-
-const DATABASE = [
-  {
-    id: '1',
-    title: 'Ruana Lima',
-    description: 'Alguma descrição do usuário aqui para que descreva algo.',
-    price: 1217,
-  },
-  {
-    id: '2',
-    title: 'Marcos Lima',
-    description: 'Alguma descrição do usuário aqui para que descreva algo.',
-    price: 1205,
-  },
-  {
-    id: '3',
-    title: 'Mario Lima',
-    description: 'Alguma descrição do usuário aqui para que descreva algo.',
-    price: 1250.21,
-  },
-  {
-    id: '4',
-    title: 'José Lima',
-    description: 'Alguma descrição do usuário aqui para que descreva algo.',
-    price: 10.21,
-  },
-  {
-    id: '5',
-    title: 'Você Lima',
-    description: 'Alguma descrição do usuário aqui para que descreva algo.',
-    price: 120.26,
-  },
-];
+import OpportunitiesEvent from './OpportunitiesEvent';
+import OpportunitiesUser from './OpportunitiesUser';
 
 const OpportunitiesScreen = () => {
-  const {to} = useNavigate();
   const {height} = useDeviceDimension();
 
   const heightMemorized = useMemo(() => Math.ceil(height * (25 / 100)), [
@@ -59,6 +22,9 @@ const OpportunitiesScreen = () => {
   ]);
 
   const [swipeIsOpen, setSwipeIsOpen] = useState(false);
+  const [filter, setFilter] = useState<{type: 'event' | 'user'}>({
+    type: 'event',
+  });
   const swipeAnimate = useRef(new Animated.Value(0)).current;
 
   const handleSwipeAnimate = useCallback(() => {
@@ -71,9 +37,17 @@ const OpportunitiesScreen = () => {
     });
   }, [swipeIsOpen, swipeAnimate]);
 
-  const handleOnSelected = useCallback(() => {
+  /* const handleOnSelected = useCallback(() => {
     to(RootStackScreens.AppStack, {screen: AppStackScreens.UserProfile});
-  }, [to]);
+  }, [to]); */
+
+  const handleToggleFilterType = useCallback(() => {
+    setFilter((prev) => ({
+      ...prev,
+      type: prev.type === 'event' ? 'user' : 'event',
+    }));
+    handleSwipeAnimate();
+  }, [setFilter, handleSwipeAnimate]);
 
   const handleGesture = useCallback(
     (event: PanGestureHandlerStateChangeEvent) => {
@@ -95,15 +69,8 @@ const OpportunitiesScreen = () => {
           onPress: handleSwipeAnimate,
         }}
         title="Oportunidades">
-        <FlatList
-          showsVerticalScrollIndicator={false}
-          style={{
-            paddingRight: 8,
-          }}
-          data={DATABASE}
-          keyExtractor={(item) => item.id}
-          renderItem={({item}) => <OpportunityCard {...(item as any)} />}
-        />
+        {filter.type === 'event' && <OpportunitiesEvent />}
+        {filter.type === 'user' && <OpportunitiesUser />}
         <PanGestureHandler onHandlerStateChange={handleGesture}>
           <Filter
             height={heightMemorized}
@@ -121,11 +88,15 @@ const OpportunitiesScreen = () => {
             <FilterSection>
               <Text size="md">Tipo</Text>
               <FilterOptions>
-                <CircledOption>
-                  <Icon icon="music" size="md" />
-                </CircledOption>
-                <CircledOption>
+                <CircledOption
+                  disabled={filter.type === 'event'}
+                  onPress={handleToggleFilterType}>
                   <Icon icon="event" size="md" />
+                </CircledOption>
+                <CircledOption
+                  disabled={filter.type === 'user'}
+                  onPress={handleToggleFilterType}>
+                  <Icon icon="music" size="md" />
                 </CircledOption>
               </FilterOptions>
             </FilterSection>
@@ -173,13 +144,18 @@ const FilterOptions = styled.View`
 `;
 
 const CircledOption = styled.TouchableOpacity`
-  ${({theme}) => css`
+  ${({theme, disabled}) => css`
     justify-content: center;
     align-items: center;
     width: 50px;
     height: 50px;
+    background-color: ${theme.colors.backgroundBlack};
     border-radius: 25px;
-    background-color: ${theme.colors.backgroundBlackSupport};
     margin: 0 ${theme.spacing.xs};
+
+    ${!disabled &&
+    css`
+      background-color: ${theme.colors.backgroundBlackSupport};
+    `}
   `}
 `;

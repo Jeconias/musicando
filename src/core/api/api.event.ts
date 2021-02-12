@@ -1,4 +1,5 @@
 import {Response} from '~/config/types';
+import {Event} from '../entity/event';
 import APIbase from './api.base';
 
 interface EventCreateRequest {
@@ -18,6 +19,26 @@ export interface EventCreateResponse extends Response {
 const eventCreate = (data: EventCreateRequest) =>
   APIbase.post<EventCreateResponse>('/events', data);
 
+// List
+
+export interface EventListRequest {
+  pg?: number;
+}
+
+export interface EventListResponse extends Response {
+  data: {
+    hasMore: boolean;
+    total: number;
+    data: Event[];
+  };
+}
+
+const eventList = (data: EventListRequest) =>
+  APIbase.get<EventListResponse>(
+    `/events/search${data.pg ? `?page=${data.pg}` : ''}`,
+  );
+
 export default {
   create: eventCreate,
+  list: eventList,
 };

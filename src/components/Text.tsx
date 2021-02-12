@@ -9,6 +9,7 @@ interface TextInterface
   size?: Size;
   color?: Color;
   marginBottom?: Size;
+  textAlign?: 'center';
 }
 
 const Text = ({...props}: TextInterface) => <TextStyled {...props} />;
@@ -19,13 +20,14 @@ const TextStyled = styled(TextBase)<{
   size?: Size;
   color?: Color;
   marginBottom?: Size;
-  fontWeight?: number;
+  textAlign?: 'center';
 }>`
-  ${({theme, size, color, marginBottom}) => css`
+  ${({theme, size, color, marginBottom, textAlign}) => css`
     font-family: 'Rubik-Regular';
     color: ${theme.colors.white};
     font-size: ${size ? theme.fontSize[size] : theme.fontSize.md};
     color: ${color ? theme.colors[color] : theme.colors.white};
     margin-bottom: ${marginBottom ? theme.spacing[marginBottom] : 0};
+    text-align: ${textAlign ? textAlign : 'left'};
   `};
 `;

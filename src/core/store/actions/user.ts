@@ -1,7 +1,11 @@
 import {createSlice, PayloadAction, SliceCaseReducers} from '@reduxjs/toolkit';
 import {LoadingStatus} from '~/config/types';
 import api from '~/core/api';
-import {UserReadResponse} from '~/core/api/api.user';
+import {
+  UserListResponse,
+  UserReadResponse,
+  UserListRequest,
+} from '~/core/api/api.user';
 import {Event} from '~/core/entity/event';
 import asyncThunk from '../utils/asyncThunk';
 import {cleanAction} from './utils';
@@ -16,12 +20,19 @@ interface UserSliceInterface {
     loading: LoadingStatus;
     response?: UserReadResponse;
   };
+  list: {
+    pg: number;
+    loading: LoadingStatus;
+    response?: UserListResponse;
+  };
 }
 
 export const userReadAsyncThunk = asyncThunk('/user/read', api.user.read, {
   condition: (_, state) =>
     !state.getState().user.read.response?.data?.events?.length,
 });
+
+export const userListAsyncThunk = asyncThunk('/user/list', api.user.list);
 
 const userSlice = createSlice<
   UserSliceInterface,
@@ -30,6 +41,11 @@ const userSlice = createSlice<
   name: 'user',
   initialState: {
     read: {
+      loading: 'idle',
+      response: undefined,
+    },
+    list: {
+      pg: 1,
       loading: 'idle',
       response: undefined,
     },
@@ -47,6 +63,11 @@ const userSlice = createSlice<
   extraReducers: (builder) => {
     builder.addCase(cleanAction.toString(), (state) => {
       state.read.response = undefined;
+      state.list = {
+        pg: 1,
+        loading: 'idle',
+        response: undefined,
+      };
     });
     builder.addCase(userReadAsyncThunk.pending.toString(), (state) => {
       state.read.loading = 'loading';
@@ -60,6 +81,37 @@ const userSlice = createSlice<
     );
     builder.addCase(userReadAsyncThunk.rejected.toString(), (state) => {
       state.read.loading = 'error';
+    });
+
+    //List
+    builder.addCase(userListAsyncThunk.pending.toString(), (state) => {
+      state.list.loading = 'loading';
+    });
+    builder.addCase<
+      string,
+      PayloadAction<UserListResponse, string, {arg?: UserListRequest}>
+    >(userListAsyncThunk.fulfilled.toString(), (state, action) => {
+      console.log(action);
+      if (action?.meta?.arg?.pg && action?.meta?.arg?.pg >= 1) {
+        state.list.pg = action?.meta?.arg.pg;
+        state.list.response = {
+          ...action.payload,
+          data: {
+            ...action.payload.data,
+            data: [
+              ...(state.list.response?.data.data ?? []),
+              ...action.payload.data.data,
+            ],
+          },
+        };
+      } else {
+        state.list.pg = 1;
+        state.list.response = action.payload;
+      }
+      state.list.loading = 'ok';
+    });
+    builder.addCase(userListAsyncThunk.rejected.toString(), (state) => {
+      state.list.loading = 'error';
     });
   },
 });

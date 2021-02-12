@@ -1,5 +1,6 @@
 import firebase from 'firebase';
 import {useCallback, useMemo} from 'react';
+import {ENVIRONMENT} from '~/config/constants';
 import useAuth from './useAuth';
 import useFeedback from './useFeedback';
 
@@ -9,16 +10,7 @@ const useFirebase = () => {
 
   const firebaseInstance = useMemo(() => {
     if (firebase.apps.length) return firebase.app();
-
-    return firebase.initializeApp({
-      apiKey: 'AIzaSyAw3mXrTIImWrJHB5Ng67I2yV2jykAvQ2g',
-      authDomain: 'me-musicando.firebaseapp.com',
-      projectId: 'me-musicando',
-      storageBucket: 'me-musicando.appspot.com',
-      messagingSenderId: '1046879507103',
-      appId: '1:1046879507103:web:23b8db457cea63a3b788aa',
-      measurementId: 'G-SKYL4YHWHD',
-    });
+    return firebase.initializeApp(ENVIRONMENT.firebase);
   }, []);
 
   const handleUpdateEventCover = useCallback(
