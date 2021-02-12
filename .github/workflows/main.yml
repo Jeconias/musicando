@@ -1,0 +1,63 @@
+# This is a basic workflow to help you get started with Actions
+
+name: Android Feature Branch CI
+
+# Controls when the action will run. 
+on:
+  # Triggers the workflow on push or pull request events but only for the master branch
+  push:
+    branches: [ master ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build-test:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-18.04
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+        
+      - name: Create .env file
+        uses: SpicyPizza/create-envfile@v1.0
+        with:
+          ENVIRONMENT: ${{ secrets.ENVIRONMENT }}
+          API_URL: ${{ secrets.API_URL }}
+          MYAPP_RELEASE_STORE_FILE: ${{ secrets.MYAPP_RELEASE_STORE_FILE }}
+          MYAPP_RELEASE_STORE_PASSWORD: ${{ secrets.MYAPP_RELEASE_STORE_PASSWORD }}
+          MYAPP_RELEASE_KEY_ALIAS: ${{ secrets.MYAPP_RELEASE_KEY_ALIAS }}
+          MYAPP_RELEASE_KEY_PASSWORD: ${{ secrets.MYAPP_RELEASE_KEY_PASSWORD }}
+          
+          FIREBASE_API_KEY: ${{ secrets.FIREBASE_API_KEY }}
+          FIREBASE_AUTH_DOMAIN: ${{ secrets.FIREBASE_AUTH_DOMAIN }}
+          FIREBASE_PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}
+          FIREBASE_STORAGE_BUCKET: ${{ secrets.FIREBASE_STORAGE_BUCKET }}
+          FIREBASE_MESSAGING_SEND_ID: ${{ secrets.FIREBASE_MESSAGING_SEND_ID }}
+          FIREBASE_APP_ID: ${{ secrets.FIREBASE_APP_ID }}
+          FIREBASE_MEASUREMENT_ID: ${{ secrets.FIREBASE_MEASUREMENT_ID }}
+          file_name: ".env.test"
+      - run: Github secrets to env file
+      - run: echo $ENVIRONMENT - $API_URL
+
+      - name: Build APK
+        uses: actions/setup-java@v1
+        with:
+          java-version: "11.0.10"
+      - run: echo "Generation the Keystore"
+      - run: keytool -genkey -v -dname "cn=OlaMundoWeb, ou=OMW, o=none, l=none, st=Rio Grande do Norte, c=RN" \
+             -keystore "./android/app/${{secrets.MYAPP_RELEASE_STORE_FILE}}" -storepass "${{secrets.MYAPP_RELEASE_STORE_PASSWORD}}" \ 
+             -alias "${{secrets.MYAPP_RELEASE_KEY_ALIAS}}" -keyalg RSA -keysize 2048 -validity 10000
+      - run: echo "Keystore generated"
+      - run: java --version
+      - run: bash ENVFILE=.env.test ./gradlew assembleRelease --stacktrace
+        
+      - name: Output
+        uses: actions/upload-artifact@v2
+        with:
+          name: Musicando
+          path: android/app/build/outputs/apk/release/app-release.apk
