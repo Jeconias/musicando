@@ -79,15 +79,10 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Display structure of downloaded files
-        run: ls -R
-        run: ls android/app/build/outputs/apk/release
-        working-directory: '.'
-
       - name: Downloading the last version of APP
         uses: actions/download-artifact@v2
         with:
-          name: MusicandoApp
+          name: MusicandoAPP
           path: '.'
 
       - name: Create Release
@@ -101,6 +96,6 @@ jobs:
             Changes in this Release
             - First Change
             - Second Change
-          body_path: ~/new/release
+          #body_path: ./app-release.apk
           draft: true
           prerelease: true
