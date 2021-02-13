@@ -4,12 +4,15 @@ import OpportunityCard from '~/components/Card/OpportunityCard';
 import Feedback from '~/components/Feedback/Feedback';
 import FeedBackError from '~/components/Feedback/FeedBackError';
 import Loading from '~/components/Loading/Loading';
+import {AppStackScreens, RootStackScreens} from '~/config/types';
 import {eventListAsyncThunk} from '~/core/store/actions/event';
+import useNavigate from '~/hooks/useNavigate';
 import useReduxDispatch from '~/hooks/useReduxDispatch';
 import useReduxSelector from '~/hooks/useReduxSelector';
 
 const OpportunitiesEvent = () => {
   const dispatch = useReduxDispatch();
+  const {to} = useNavigate();
 
   const {events, hasMore, pg, loading} = useReduxSelector((state) => ({
     pg: state.event.list.pg || 1,
@@ -57,6 +60,14 @@ const OpportunitiesEvent = () => {
               description={item.description}
               image={item?.cover || ''}
               price={item.valueRef || item.value_ref || 0}
+              onSelect={() => {
+                to(RootStackScreens.AppStack, {
+                  screen: AppStackScreens.EventDetails,
+                  params: {
+                    event: item,
+                  },
+                });
+              }}
             />
           )}
           ListFooterComponent={() => (

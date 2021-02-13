@@ -3,8 +3,9 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
+    "android:build:test": "cd android && ENVFILE=.env.test ./gradlew assembleRelease",
+    "android:build:prod": "cd android && ENVFILE=.env.production ./gradlew assembleRelease",
     "android:test": "ENVFILE=.env.test yarn react-native run-android --variant=release",
-    "android:build:test": "ENVFILE=.env.test cd android && ./gradlew assembleRelease",
     "android": "react-native run-android",
     "ios": "react-native run-ios",
     "start": "react-native start",

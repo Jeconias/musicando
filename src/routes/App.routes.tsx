@@ -11,6 +11,7 @@ import WelcomeNetworkingScreen from '~/screens/welcome/WelcomeNetworkingScreen';
 import OpportunitiesScreen from '~/screens/OpportunitiesScreen';
 import UserProfileScreen from '~/screens/UserProfileScreen';
 import {AppStackScreens} from '~/config/types';
+import EventDetailsScreen from '~/screens/EventDetailsScreen';
 
 type StackNavigatorInterface = {
   [key in AppStackScreens]: any;
@@ -54,6 +55,10 @@ const AppRoutes = () => {
       <AppStack.Screen
         name={AppStackScreens.UserProfile}
         component={UserProfileScreen}
+      />
+      <AppStack.Screen
+        name={AppStackScreens.EventDetails}
+        component={EventDetailsScreen}
       />
     </AppStack.Navigator>
   );

@@ -28,6 +28,7 @@ export enum AppStackScreens {
   Login = 'AppStack:Login',
   Opportunities = 'AppStack:Opportunities',
   UserProfile = 'AppStack:UserProfile',
+  EventDetails = 'AppStack:EventDetails',
 }
 
 export enum AuthStackScreens {
@@ -52,3 +53,11 @@ export type Response = {
 };
 
 export type RequestError<T = Response> = AxiosError<T>;
+
+export interface RouteParams<T> {
+  route: {
+    key: string;
+    name: string;
+    params: T | undefined;
+  };
+}

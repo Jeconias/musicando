@@ -1,47 +1,73 @@
 import {isEmpty} from 'lodash';
-import React from 'react';
-import {ScrollView} from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {ScrollView, Image} from 'react-native';
 import styled, {css} from 'styled-components/native';
 import {fonts, SafeAreaView} from '~/components/common';
 import Feedback from '~/components/Feedback/Feedback';
 import Icon from '~/components/Icon';
 import ContainerWithHeader from '~/components/Layout/ContainerWithHeader';
+import Loading from '~/components/Loading/Loading';
 import Text from '~/components/Text';
-import {RouteParams} from '~/config/types';
-import {User} from '~/core/entity/user';
+import {LoadingStatus, RouteParams} from '~/config/types';
+import {Event} from '~/core/entity/event';
+import useFirebase from '~/hooks/useFirebase';
 import useNavigate from '~/hooks/useNavigate';
 
-interface UserProfileScreenInterface extends RouteParams<{user: User}> {}
+interface EventDetailsScreenInterface extends RouteParams<{event: Event}> {}
 
-const UserProfileScreen = ({route: {params}}: UserProfileScreenInterface) => {
+const EventDetailsScreen = ({route: {params}}: EventDetailsScreenInterface) => {
   const {goBack} = useNavigate();
+  const {
+    event: {getCover},
+  } = useFirebase();
 
-  const user = params?.user;
-  const hasUser = !isEmpty(user);
+  const event = params?.event;
+  const hasEvent = !isEmpty(event);
+
+  const [eventCover, setEventCover] = useState<string | undefined>();
+  const [loading, setLoading] = useState<LoadingStatus>('idle');
+
+  useEffect(() => {
+    if (!event?.uuid || eventCover === '' || eventCover) return;
+    setLoading('loading');
+
+    (async () => {
+      const cover = await getCover(event?.uuid);
+      setEventCover(cover ?? '');
+      setLoading('ok');
+    })();
+  }, [getCover, event]);
 
   return (
     <SafeAreaView>
       <ContainerWithHeader
         iconLeft={{icon: 'arrowLeft', onPress: goBack}}
-        title="Perfil">
-        {!hasUser && (
+        title="Detalhes">
+        {!hasEvent && (
           <Feedback
             title="Ops! Não conseguimos localizar esse usuário. 😱"
             text="Por favor, verifique a conexão com a sua internet."
           />
         )}
-        {hasUser && (
+        {loading === 'loading' && <Loading />}
+        {hasEvent && loading === 'ok' && (
           <ScrollView>
             <UserInfos>
               <WrapperUserPhoto>
-                <UserPhoto source={{uri: user?.photo}} />
+                <ImageContainer>
+                  {event?.cover || eventCover ? (
+                    <Image source={{uri: event?.cover ?? eventCover}} />
+                  ) : (
+                    <Icon icon="event" size="xl" color="text" />
+                  )}
+                </ImageContainer>
               </WrapperUserPhoto>
               <Infos>
                 <Like onPress={() => {}}>
                   <Icon icon="heart" size="md" />
                 </Like>
                 <UserName size="sm" color="primary">
-                  {user?.name ?? ''}
+                  {event?.title ?? ''}
                 </UserName>
                 <Info>
                   <Icon icon="star" size="sm" color="text" marginRight="xxs" />
@@ -49,34 +75,29 @@ const UserProfileScreen = ({route: {params}}: UserProfileScreenInterface) => {
                     4.5
                   </Text>
                 </Info>
-                <Info>
-                  <Icon icon="money" size="sm" color="text" marginRight="xxs" />
-                  <Text size="sm" color="white">
-                    R$ 150.00
-                  </Text>
-                </Info>
+                {(event?.valueRef || event?.value_ref) && (
+                  <Info>
+                    <Icon
+                      icon="money"
+                      size="sm"
+                      color="text"
+                      marginRight="xxs"
+                    />
+
+                    <Text size="sm" color="white">
+                      R${' '}
+                      {(event?.valueRef ?? event?.value_ref ?? '').toString()}
+                    </Text>
+                  </Info>
+                )}
               </Infos>
             </UserInfos>
             <ContentsWrapper>
               <ContentTitle>Resumo</ContentTitle>
               <DescriptionText size="xs">
-                Lorem Ipsum is simply dummy text of the printing and typesetting
-                industry. Lorem Ipsum has been the industry's standard dummy
-                text ever since the 1500s. Lorem Ipsum is simply dummy text of
-                the printing and typesetting industry. Lorem Ipsum has been the
-                industry's standard dummy text ever since the 1500s
+                {event?.description ?? ''}
               </DescriptionText>
             </ContentsWrapper>
-            {/* <ContentsWrapper>
-              <ContentTitle>Galeria</ContentTitle>
-              <GalleryItems>
-                <LightBoxView>
-                  <Image
-                    source={require('../assets/imgs/profiles/default.jpg')}
-                  />
-                </LightBoxView>
-              </GalleryItems>
-            </ContentsWrapper> */}
           </ScrollView>
         )}
       </ContainerWithHeader>
@@ -84,7 +105,7 @@ const UserProfileScreen = ({route: {params}}: UserProfileScreenInterface) => {
   );
 };
 
-export default UserProfileScreen;
+export default EventDetailsScreen;
 
 const UserInfos = styled.View`
   ${({theme}) => css`
@@ -102,8 +123,11 @@ const WrapperUserPhoto = styled.View`
   height: 100%;
   width: 136px;
 `;
-const UserPhoto = styled.Image`
+
+const ImageContainer = styled.View`
   ${({theme}) => css`
+    align-items: center;
+    justify-content: center;
     position: absolute;
     bottom: 0;
     width: 100%;
@@ -163,7 +187,7 @@ const DescriptionText = styled(Text)`
   ${fonts.RubikLight};
 `;
 
-const Image = styled.Image`
+/* const Image = styled.Image`
   width: 65px;
   height: 65px;
   border-radius: 5px;
@@ -173,4 +197,4 @@ const Image = styled.Image`
 const GalleryItems = styled.View`
   flex-direction: row;
   margin: 0 -${({theme}) => theme.spacing.xxs};
-`;
+`; */
