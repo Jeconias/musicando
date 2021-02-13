@@ -2,11 +2,11 @@
 
 name: Android Feature Branch CI
 
-# Controls when the action will run. 
+# Controls when the action will run.
 on:
   # Triggers the workflow on push or pull request events but only for the master branch
   push:
-    branches: [ master ]
+    branches: [master]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -22,9 +22,9 @@ jobs:
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
-        
+
       - name: Create .env file
-        uses: SpicyPizza/create-envfile@v1.0
+        uses: Jeconias/create-envfile@v1.0
         with:
           ENVIRONMENT: ${{ secrets.ENVIRONMENT }}
           API_URL: ${{ secrets.API_URL }}
@@ -32,7 +32,7 @@ jobs:
           MYAPP_RELEASE_STORE_PASSWORD: ${{ secrets.MYAPP_RELEASE_STORE_PASSWORD }}
           MYAPP_RELEASE_KEY_ALIAS: ${{ secrets.MYAPP_RELEASE_KEY_ALIAS }}
           MYAPP_RELEASE_KEY_PASSWORD: ${{ secrets.MYAPP_RELEASE_KEY_PASSWORD }}
-          
+
           FIREBASE_API_KEY: ${{ secrets.FIREBASE_API_KEY }}
           FIREBASE_AUTH_DOMAIN: ${{ secrets.FIREBASE_AUTH_DOMAIN }}
           FIREBASE_PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}
@@ -40,22 +40,18 @@ jobs:
           FIREBASE_MESSAGING_SEND_ID: ${{ secrets.FIREBASE_MESSAGING_SEND_ID }}
           FIREBASE_APP_ID: ${{ secrets.FIREBASE_APP_ID }}
           FIREBASE_MEASUREMENT_ID: ${{ secrets.FIREBASE_MEASUREMENT_ID }}
-          file_name: ".env.test"
-      - run: Github secrets to env file
-      - run: echo $ENVIRONMENT - $API_URL
+          file_name: '.env.test'
+          directory: '.'
 
-      - name: Build APK
+      - name: Signing and Building the APP
         uses: actions/setup-java@v1
         with:
-          java-version: "11.0.10"
+          java-version: '11.0.10'
       - run: echo "Generation the Keystore"
-      - run: keytool -genkey -v -dname "cn=OlaMundoWeb, ou=OMW, o=none, l=none, st=Rio Grande do Norte, c=RN" \
-             -keystore "./android/app/${{secrets.MYAPP_RELEASE_STORE_FILE}}" -storepass "${{secrets.MYAPP_RELEASE_STORE_PASSWORD}}" \ 
-             -alias "${{secrets.MYAPP_RELEASE_KEY_ALIAS}}" -keyalg RSA -keysize 2048 -validity 10000
-      - run: echo "Keystore generated"
-      - run: java --version
-      - run: bash ENVFILE=.env.test ./gradlew assembleRelease --stacktrace
-        
+      - run: keytool -genkey -v -dname "cn=OlaMundoWeb, ou=OMW, o=none, l=none, st=Rio Grande do Norte, c=RN" -keystore "./android/app/${{ secrets.MYAPP_RELEASE_STORE_FILE }}" -storepass "${{ secrets.MYAPP_RELEASE_STORE_PASSWORD }}" -alias "${{ secrets.MYAPP_RELEASE_KEY_ALIAS }}" -keyalg RSA -keysize 2048 -validity 10000
+      - run: echo "Building APP"
+      - run: cd android && ENVFILE=.env.test ./gradlew assembleRelease --stacktrace
+
       - name: Output
         uses: actions/upload-artifact@v2
         with:
