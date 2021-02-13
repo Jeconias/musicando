@@ -47,12 +47,15 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: '11.0.10'
-      - run: echo "Generation the Keystore"
       - run: keytool -genkey -v -dname "cn=OlaMundoWeb, ou=OMW, o=none, l=none, st=Rio Grande do Norte, c=RN" -keystore "./android/app/${{ secrets.MYAPP_RELEASE_STORE_FILE }}" -storepass "${{ secrets.MYAPP_RELEASE_STORE_PASSWORD }}" -alias "${{ secrets.MYAPP_RELEASE_KEY_ALIAS }}" -keyalg RSA -keysize 2048 -validity 10000
-      - run: echo "Building APP"
-      - run: cd android && ENVFILE=.env.test ./gradlew assembleRelease --stacktrace
 
-      - name: Output
+      - name: Installing dependencies and building APP
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+      - run: yarn install --production && yarn android:build:test
+
+      - name: Output APP
         uses: actions/upload-artifact@v2
         with:
           name: Musicando
