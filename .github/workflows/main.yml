@@ -13,21 +13,30 @@ on:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  Build-App:
-    # The type of runner that the job will run on
+  BuildApp:
     runs-on: ubuntu-18.04
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
+    outputs:
+      shouldCreateRelease: ${{ steps.changelog.outputs.shouldCreateRelease }}
+      changelog: ${{ steps.changelog.outputs.changelog }}
+      version: ${{ steps.changelog.outputs.version }}
+      release: ${{ steps.changelog.outputs.release }}
+
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
+
+      - name: Read the README.md - Changelog
+        id: changelog
+        uses: Jeconias/changelog@v1.4
 
       - uses: actions/cache@v2
         id: cacheApp
         with:
           path: |
             node_modules
-          key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}
+            android/app/build/outputs/apk/release
+          key: ${{ steps.changelog.outputs.version }}-${{ hashFiles('yarn.lock') }}
 
       - name: Create .env file
         uses: Jeconias/create-envfile@v1.0
@@ -55,47 +64,54 @@ jobs:
           java-version: '11.0.10'
       - run: keytool -genkey -v -dname "cn=OlaMundoWeb, ou=OMW, o=none, l=none, st=Rio Grande do Norte, c=RN" -keystore "./android/app/${{ secrets.MYAPP_RELEASE_STORE_FILE }}" -storepass "${{ secrets.MYAPP_RELEASE_STORE_PASSWORD }}" -alias "${{ secrets.MYAPP_RELEASE_KEY_ALIAS }}" -keyalg RSA -keysize 2048 -validity 10000
 
-      - name: Checking cache
-        if: steps.cacheApp.outputs.cache-hit != 'true'
-        run: yarn install --production
-
-      - name: Installing dependencies and building APP
+      - name: Set up node v14
         uses: actions/setup-node@v2
         with:
           node-version: '14'
-      - run: yarn android:build:test
 
-      - name: Sharing App
-        uses: actions/upload-artifact@v2
-        with:
-          name: MusicandoAPP
-          path: android/app/build/outputs/apk/release/app-release.apk
+      - name: Install dependencies and build APP if cache not hit
+        if: steps.cacheApp.outputs.cache-hit != 'true'
+        run: yarn install --production && yarn android:build:test
 
-  Release-App:
-    needs: Build-App
+  ReleaseApp:
+    needs: BuildApp
+    if: needs.BuildApp.outputs.shouldCreateRelease == 'true'
 
     runs-on: ubuntu-18.04
 
     steps:
       - uses: actions/checkout@v2
 
-      - name: Downloading the last version of APP
-        uses: actions/download-artifact@v2
+      - uses: actions/cache@v2
+        id: cacheApp
         with:
-          name: MusicandoAPP
-          path: '.'
+          path: |
+            node_modules
+            android/app/build/outputs/apk/release
+          key: ${{ needs.BuildApp.outputs.version }}-${{ hashFiles('yarn.lock') }}
+
+      - name: Create a release only if cache exists
+        if: steps.cacheApp.outputs.cache-hit != 'true'
+        run: exit 1
 
       - name: Create Release
+        id: createRelease
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
-          body: |
-            Changes in this Release
-            - First Change
-            - Second Change
-          #body_path: ./app-release.apk
-          draft: true
-          prerelease: true
+          tag_name: ${{ needs.BuildApp.outputs.version }}
+          release_name: ${{ needs.BuildApp.outputs.release }}
+          body: ${{ needs.BuildApp.outputs.changelog }}
+          draft: false
+          prerelease: false
+
+      - name: Upload Release assets
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.createRelease.outputs.upload_url }}
+          asset_path: android/app/build/outputs/apk/release/app-release.apk
+          asset_name: Musicando.apk
+          asset_content_type: application/vnd.android.package-archive

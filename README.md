@@ -10,3 +10,13 @@ This project aims to facilite communication between music and event promoters.
 - Use the `.env.example` to create your .env file.
 - In the android folder run:
   - `ENVFILE=.env.ENVIRONMENT ./gradlew assembleRelease`
+
+### Changelog
+
+<!-- Version start @@ {"version":"v1.4", "release":"Internal Test", "shouldCreateRelease":"true"} -->
+
+- #### v0.1.4
+
+  - Added enhancement on CI for create release
+
+  <!-- Version end -->
