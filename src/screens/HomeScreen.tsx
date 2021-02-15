@@ -14,6 +14,7 @@ import {SafeAreaView} from '~/components/common';
 import Icon from '~/components/Icon';
 import ContainerWithHeader from '~/components/Layout/ContainerWithHeader';
 import Text from '~/components/Text';
+import {ENVIRONMENT} from '~/config/constants';
 import {AuthStackScreens, RootStackScreens} from '~/config/types';
 import useDeviceDimension from '~/hooks/useDeviceDimension';
 import useNavigate from '~/hooks/useNavigate';
@@ -73,7 +74,8 @@ const HomeScreen = () => {
               <NextEventCard>
                 <View>
                   <NextEventTitle size="sm">
-                    Título do próximo evento
+                    Título do próximo evento {ENVIRONMENT.api}{' '}
+                    {new Boolean(ENVIRONMENT.isHom).toString()}
                   </NextEventTitle>
                   <Text size="xs">Cidade, Estado</Text>
                 </View>
@@ -102,7 +104,7 @@ const Day = ({
 }) => (
   <DateText withBackground={withBackground}>
     <Text size="md">{format(date, 'dd')}</Text>
-    <Text size="xs">{capitalize(format(date, 'iii'))}</Text>
+    <Text size="xs">{capitalize(format(date, 'iiiiii'))}</Text>
   </DateText>
 );
 

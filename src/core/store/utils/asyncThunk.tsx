@@ -27,7 +27,10 @@ const asyncThunk = <Req, Res, ErrorResParams = {}>(
             err?.response?.data as RequestError<ErrorResParams>,
           );
         } else {
-          return rejectWithValue(err);
+          return rejectWithValue({
+            message: err?.message,
+            isAxiosError: err?.isAxiosError,
+          });
         }
       }
     },

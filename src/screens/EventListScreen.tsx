@@ -40,20 +40,7 @@ const EventListScreen = () => {
     if (!user || !user?.uuid) return;
 
     (async () => {
-      const resp = await dispatch(userReadAsyncThunk({id: user.uuid}));
-      if (
-        userReadAsyncThunk.rejected.match(resp) &&
-        resp.error.name !== 'ConditionError'
-      ) {
-        const error = resp.payload as RequestError;
-        const message =
-          error?.message ?? 'Ops! Tivemos um problema inesperado.';
-
-        feedback({
-          message,
-          type: 'danger',
-        });
-      }
+      await dispatch(userReadAsyncThunk({id: user.uuid}));
     })();
   }, [user, feedback]);
 
