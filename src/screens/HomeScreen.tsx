@@ -14,7 +14,6 @@ import {SafeAreaView} from '~/components/common';
 import Icon from '~/components/Icon';
 import ContainerWithHeader from '~/components/Layout/ContainerWithHeader';
 import Text from '~/components/Text';
-import {ENVIRONMENT} from '~/config/constants';
 import {AuthStackScreens, RootStackScreens} from '~/config/types';
 import useDeviceDimension from '~/hooks/useDeviceDimension';
 import useNavigate from '~/hooks/useNavigate';
@@ -74,8 +73,7 @@ const HomeScreen = () => {
               <NextEventCard>
                 <View>
                   <NextEventTitle size="sm">
-                    Título do próximo evento {ENVIRONMENT.api}{' '}
-                    {new Boolean(ENVIRONMENT.isHom).toString()}
+                    Título do próximo evento
                   </NextEventTitle>
                   <Text size="xs">Cidade, Estado</Text>
                 </View>

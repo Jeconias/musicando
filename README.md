@@ -13,14 +13,18 @@ This project aims to facilite communication between music and event promoters.
 
 ### Changelog
 
-<!-- Version start @@ {"version":"v1.5", "release":"Internal Test", "shouldCreateRelease":"true"} -->
+<!-- Version start @@ {"version":"v1.6", "release":"Internal Test", "shouldCreateRelease":"true"} -->
+
+- #### v0.1.6
+
+  - Fix workflow CI.
+
+  <!-- Version end -->
 
 - #### v0.1.5
 
   - Fix response API;
   - Fix date format on home screen.
-
-  <!-- Version end -->
 
 - #### v0.1.4
 
