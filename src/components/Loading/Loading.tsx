@@ -13,5 +13,5 @@ export default Loading;
 const Container = styled.View`
   flex: 1;
   justify-content: center;
-  margin: ${({theme}) => theme.spacing.lg} 0;
+  margin: ${({theme}) => theme.spacing.sm} 0;
 `;

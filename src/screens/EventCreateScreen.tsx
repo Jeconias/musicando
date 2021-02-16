@@ -58,8 +58,8 @@ const schema = yup.object().shape({
     .required('Informação obrigatória.'),
   valueRef: yup
     .number()
-    .max(1000000, 'O máximo deve ser R$ 10.000,00')
-    .min(1, 'O mínimo deve ser R$ 1')
+    .max(1000000, 'O valor máximo é de R$ 10.000,00.')
+    .min(1, 'O valor mínimo é de R$ 1.')
     .required('Informação obrigatória.'),
   address: yup
     .string()

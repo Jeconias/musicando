@@ -4,7 +4,6 @@ import DateTimePicker, {
   WindowsDatePickerChangeEvent,
 } from '@react-native-community/datetimepicker';
 import {differenceInYears, subYears} from 'date-fns';
-import {capitalize} from 'lodash';
 import React, {useCallback, useEffect, useState} from 'react';
 import {Controller, useForm} from 'react-hook-form';
 import {Keyboard, View} from 'react-native';

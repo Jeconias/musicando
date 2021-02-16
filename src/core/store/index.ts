@@ -6,11 +6,13 @@ import {
 import ReportError from '../middlewares/ReportError';
 import eventSlice from './actions/event';
 import feedbackSlice from './actions/feedback';
+import proposalSlice from './actions/proposal';
 import userSlice from './actions/user';
 
 const rootReducer = combineReducers({
   user: userSlice.reducer,
   event: eventSlice.reducer,
+  proposal: proposalSlice.reducer,
   feedback: feedbackSlice.reducer,
 });
 
