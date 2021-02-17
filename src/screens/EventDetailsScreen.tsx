@@ -102,12 +102,12 @@ const EventDetailsScreen = ({route: {params}}: EventDetailsScreenInterface) => {
       );
       if (proposalCreateAsyncThunk.fulfilled.match(resp)) {
         reset(defaultValues);
-        toggleLightBox();
         feedback({
           type: 'success',
           message: 'Proposta enviada com sucesso!',
         });
       }
+      toggleLightBox();
     },
     [dispatch, event, reset, toggleLightBox, feedback],
   );

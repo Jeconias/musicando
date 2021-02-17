@@ -46,7 +46,7 @@ interface FormData {
 const schema = yup.object().shape({
   name: yup
     .string()
-    .min(10, 'O nome deve conter no mínimo 10 caracteres.')
+    .min(3, 'O nome deve conter no mínimo 3 caracteres.')
     .required('Informação obrigatória.'),
   email: yup
     .string()
@@ -137,8 +137,9 @@ const RegisterScreen = () => {
 
         const response = await api.user.create({
           name: data.name,
-          nickName: nickName.length > 0 ? nickName[0] : data.name,
-          email: data.email,
+          nickName:
+            nickName.length > 0 ? nickName[nickName.length - 1] : data.name,
+          email: data.email.toLowerCase(),
           password: data.password,
           birthdate: format(data.birthdate, 'yyyy-MM-dd'),
           phoneNumber: '84994381350',
@@ -147,13 +148,7 @@ const RegisterScreen = () => {
         });
 
         if (response.data.status) {
-          reset({
-            name: '',
-            email: '',
-            birthdate: undefined,
-            password: '',
-            terms: false,
-          });
+          reset(defaultValues);
           handleUpdate({email: data.email});
           feedback({
             message: 'Cadastro realizado com sucesso!',

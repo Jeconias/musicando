@@ -73,7 +73,10 @@ const LoginScreen = () => {
       setLoading('loading');
 
       try {
-        const resp = await api.auth.authentication(data);
+        const resp = await api.auth.authentication({
+          email: data.email.toLowerCase(),
+          password: data.password,
+        });
         if (resp.data.status) {
           handleOnSuccess(resp.data);
         } else {

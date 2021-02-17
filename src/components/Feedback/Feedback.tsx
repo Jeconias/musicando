@@ -7,8 +7,8 @@ interface FeedbackInterface {
   text: string;
 }
 
-const Feedback = ({title, text}: FeedbackInterface) => (
-  <ViewStyled>
+const Feedback = ({title, text, ...props}: FeedbackInterface) => (
+  <ViewStyled {...props}>
     <Text size="sm" marginBottom="xxs" textAlign="center">
       {title}
     </Text>

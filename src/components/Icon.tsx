@@ -6,6 +6,8 @@ import styled, {css, useTheme} from 'styled-components';
 import MapSVG from '../assets/svgs/background-world.svg';
 import WorldSVG from '../assets/svgs/world.svg';
 import LocationSVG from '../assets/svgs/location.svg';
+import CheckSmallSVG from '../assets/svgs/check-small.svg';
+import CloseSmallSVG from '../assets/svgs/close-small.svg';
 import LocationBigSVG from '../assets/svgs/local-two.svg';
 import ArrowRightSVG from '../assets/svgs/right.svg';
 import ArrowLeftSVG from '../assets/svgs/left.svg';
@@ -59,6 +61,8 @@ const ICONS = {
   plus: PlusSVG,
   comment: CommentSVG,
   camera: CameraSVG,
+  checkSmall: CheckSmallSVG,
+  closeSmall: CloseSmallSVG,
 };
 
 const SIZES = {

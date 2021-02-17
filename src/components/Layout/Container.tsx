@@ -1,5 +1,5 @@
 import React from 'react';
-import {KeyboardAvoidingView, Platform, View} from 'react-native';
+import {KeyboardAvoidingView, Platform, ScrollView, View} from 'react-native';
 import styled, {css} from 'styled-components';
 import {ComponentWithChildrenInterface} from '~/config/types';
 
@@ -11,7 +11,9 @@ const Container = ({...props}: ContainerProps) => (
   <KeyboardAvoidingViewStyled
     behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     enabled>
-    <ViewStyled {...props} />
+    <ScrollView contentContainerStyle={{flexGrow: 1}}>
+      <ViewStyled {...props} />
+    </ScrollView>
   </KeyboardAvoidingViewStyled>
 );
 

@@ -2,28 +2,40 @@ import {useIsDrawerOpen} from '@react-navigation/drawer';
 import {addDays, subDays} from 'date-fns';
 import {capitalize} from 'lodash';
 import {math, rgba} from 'polished';
-import React, {useCallback} from 'react';
-import {View} from 'react-native';
+import React, {Fragment, useCallback, useEffect} from 'react';
+import {ScrollView, View} from 'react-native';
 import {
   PanGestureHandler,
   State,
   PanGestureHandlerStateChangeEvent,
 } from 'react-native-gesture-handler';
+import {useDispatch} from 'react-redux';
 import styled, {css} from 'styled-components/native';
+import ProposalCard from '~/components/Card/ProposalCard';
 import {SafeAreaView} from '~/components/common';
+import Feedback from '~/components/Feedback/Feedback';
 import Icon from '~/components/Icon';
 import ContainerWithHeader from '~/components/Layout/ContainerWithHeader';
+import Loading from '~/components/Loading/Loading';
 import Text from '~/components/Text';
 import {AuthStackScreens, RootStackScreens} from '~/config/types';
+import {proposalListAsyncThunk} from '~/core/store/actions/proposal';
 import useDeviceDimension from '~/hooks/useDeviceDimension';
 import useNavigate from '~/hooks/useNavigate';
+import useReduxSelector from '~/hooks/useReduxSelector';
 import {format} from '~/utils/date';
 
 const today = new Date();
 
 const HomeScreen = () => {
+  const dispatch = useDispatch();
   const {to, toggleDrawer} = useNavigate();
   const {width, height} = useDeviceDimension();
+
+  const {proposals, loadingProposals} = useReduxSelector((state) => ({
+    loadingProposals: state.proposal.list.loading,
+    proposals: state.proposal.list.response,
+  }));
 
   const handleGesture = useCallback(
     (event: PanGestureHandlerStateChangeEvent) => {
@@ -39,6 +51,12 @@ const HomeScreen = () => {
     },
     [],
   );
+
+  useEffect(() => {
+    (async () => {
+      await dispatch(proposalListAsyncThunk({}));
+    })();
+  }, [dispatch]);
 
   return (
     <SafeAreaView>
@@ -66,26 +84,47 @@ const HomeScreen = () => {
             return <Day key={k} date={today} withBackground />;
           })}
         </HeaderBackground>
-        <PanGestureHandler onHandlerStateChange={handleGesture}>
-          <Content>
-            <Section>
-              <SectionTitle size="md">Próximo evento</SectionTitle>
-              <NextEventCard>
-                <View>
-                  <NextEventTitle size="sm">
-                    Título do próximo evento
-                  </NextEventTitle>
-                  <Text size="xs">Cidade, Estado</Text>
-                </View>
-                <NextEventActions>
-                  <SeeEvent>
-                    <Icon icon="arrowRight" />
-                  </SeeEvent>
-                </NextEventActions>
-              </NextEventCard>
-            </Section>
-          </Content>
-        </PanGestureHandler>
+        {loadingProposals === 'loading' && <Loading />}
+        {loadingProposals == 'ok' && (
+          <PanGestureHandler onHandlerStateChange={handleGesture}>
+            <Content>
+              <Section>
+                <NextEventCard>
+                  <SectionTitle size="md" marginBottom="sm">
+                    Próximo evento
+                  </SectionTitle>
+                  <DescriptionWrapper>
+                    <View>
+                      <Text size="sm" marginBottom="xs">
+                        Título do próximo evento
+                      </Text>
+                      <Text size="xs">Cidade, Estado</Text>
+                    </View>
+                    <NextEventActions>
+                      <SeeEvent>
+                        <Icon icon="arrowRight" />
+                      </SeeEvent>
+                    </NextEventActions>
+                  </DescriptionWrapper>
+                </NextEventCard>
+              </Section>
+              <ProposalsSection>
+                <Text size="sm">Últimas propostas</Text>
+                <ListProposals>
+                  {proposals?.length === 0 && (
+                    <StyledFeedback
+                      title="Nada por aqui 😪"
+                      text="No momento, você não possui propostas."
+                    />
+                  )}
+                  {proposals?.map((p) => (
+                    <ProposalCard key={p.uuid} proposal={p} />
+                  ))}
+                </ListProposals>
+              </ProposalsSection>
+            </Content>
+          </PanGestureHandler>
+        )}
       </ContainerWithHeader>
     </SafeAreaView>
   );
@@ -144,7 +183,11 @@ const Content = styled.View`
   `}
 `;
 
-const Section = styled.View``;
+const Section = styled.View`
+  ${({theme}) => css`
+    margin-bottom: ${theme.spacing.md};
+  `}
+`;
 
 const SectionTitle = styled(Text)`
   ${({theme}) => css`
@@ -154,9 +197,6 @@ const SectionTitle = styled(Text)`
 
 const NextEventCard = styled.View`
   ${({theme}) => css`
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
     background-color: ${theme.colors.primary};
     padding: ${theme.spacing.sm};
     margin-right: -${theme.spacing.md};
@@ -165,15 +205,15 @@ const NextEventCard = styled.View`
   `}
 `;
 
-const NextEventTitle = styled(Text)`
+const DescriptionWrapper = styled.View`
   ${({theme}) => css`
-    margin-bottom: ${theme.spacing.sm};
+    flex-direction: row;
+    justify-content: space-between;
+    padding-left: ${theme.spacing.sm};
   `}
 `;
 
-const NextEventActions = styled.View`
-  ${({theme}) => css``}
-`;
+const NextEventActions = styled.View``;
 
 const SeeEvent = styled.TouchableOpacity`
   ${({theme}) => css`
@@ -183,5 +223,27 @@ const SeeEvent = styled.TouchableOpacity`
     height: 32px;
     border-radius: 7px;
     background-color: ${rgba(theme.colors.white, 0.2)};
+  `}
+`;
+
+const ProposalsSection = styled.View`
+  ${({theme}) => css`
+    padding: ${theme.spacing.sm};
+    background-color: ${theme.colors.backgroundBlackOpacity};
+    border-radius: 15px;
+    margin-bottom: ${theme.spacing.md};
+  `}
+`;
+
+const ListProposals = styled.View`
+  ${({theme}) => css`
+    padding-left: ${theme.spacing.sm};
+  `}
+`;
+
+const StyledFeedback = styled(Feedback)`
+  ${({theme}) => css`
+    padding-top: ${theme.spacing.lg};
+    padding-bottom: ${theme.spacing.md};
   `}
 `;
