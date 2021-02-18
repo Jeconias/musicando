@@ -1,15 +1,24 @@
 import React, {useCallback, useMemo, useRef, useState} from 'react';
-import {Animated, Easing, LayoutChangeEvent} from 'react-native';
+import {Animated, Easing, LayoutChangeEvent, View} from 'react-native';
 import styled, {css} from 'styled-components/native';
 import {Proposal, ProposalState} from '~/core/entity/proposal';
+import {format} from '~/utils/date';
 import Icon from '../Icon';
 import Text from '../Text';
 
 interface ProposalCardInterface {
   proposal: Proposal;
+  disabledActions?: boolean;
+  onAccepted(uuid: string): void;
+  onRejected(uuid: string): void;
 }
 
-const ProposalCard = ({proposal}: ProposalCardInterface) => {
+const ProposalCard = ({
+  proposal,
+  disabledActions,
+  onAccepted,
+  onRejected,
+}: ProposalCardInterface) => {
   const animatedDescription = useRef(new Animated.Value(0)).current;
   const animatedActions = useRef(new Animated.Value(0)).current;
 
@@ -43,7 +52,6 @@ const ProposalCard = ({proposal}: ProposalCardInterface) => {
   );
 
   const handleDescriptionShow = useCallback(() => {
-    console.log('aaa');
     if (descriptionIsVisible) {
       Animated.sequence([
         Animated.timing(animatedActions, {
@@ -89,9 +97,14 @@ const ProposalCard = ({proposal}: ProposalCardInterface) => {
           <Dot proposalState={proposal.state} />
           <Text size="sm">{proposal.event.title}</Text>
         </TitleWrapper>
-        <Text size="xs" color="primary">
-          R$ {proposal.value}
-        </Text>
+        <View>
+          <Text size="xs" color="primary">
+            R$ {proposal.value}
+          </Text>
+          <TextLeft size="xxs" color="text">
+            {format(new Date(proposal.created), 'dd MMM')}
+          </TextLeft>
+        </View>
       </ActionButton>
       <DescrptionWrapper
         style={{
@@ -101,22 +114,28 @@ const ProposalCard = ({proposal}: ProposalCardInterface) => {
           <Text size="xs" marginBottom="sm">
             {proposal.description}
           </Text>
-          <Text size="xs">{proposal.from.name}.</Text>
-          <Actions
-            style={{
-              transform: [
-                {
-                  translateX: animatedActionsMemorized,
-                },
-              ],
-            }}>
-            <Action>
-              <Icon icon="checkSmall" size="sm" color="feedbackSuccess" />
-            </Action>
-            <Action>
-              <Icon icon="closeSmall" size="sm" color="feedbackError" />
-            </Action>
-          </Actions>
+          <TextLeft size="xs">{proposal.from.name}.</TextLeft>
+          {proposal.state === ProposalState.AWAITING && (
+            <Actions
+              style={{
+                transform: [
+                  {
+                    translateX: animatedActionsMemorized,
+                  },
+                ],
+              }}>
+              <Action
+                onPress={() => onAccepted(proposal.uuid)}
+                disabled={disabledActions}>
+                <Icon icon="checkSmall" size="sm" color="feedbackSuccess" />
+              </Action>
+              <Action
+                onPress={() => onRejected(proposal.uuid)}
+                disabled={disabledActions}>
+                <Icon icon="closeSmall" size="sm" color="feedbackError" />
+              </Action>
+            </Actions>
+          )}
         </Description>
       </DescrptionWrapper>
     </Container>
@@ -194,4 +213,8 @@ const Action = styled.TouchableOpacity`
     margin: 0 ${theme.spacing.xs};
     border-radius: 5px;
   `}
+`;
+
+const TextLeft = styled(Text)`
+  margin-left: auto;
 `;

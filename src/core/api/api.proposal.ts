@@ -1,28 +1,23 @@
-import {Response} from '~/config/types';
-import {Proposal} from '../entity/proposal';
 import APIbase from './api.base';
-
-interface ProposalCreateRequest {
-  uuidEvent: string;
-  value: string;
-  description: string;
-}
-
-interface ProposalCreateResponse extends Response {}
+import {
+  ProposalCreateRequest,
+  ProposalCreateResponse,
+  ProposalDeleteRequest,
+  ProposalDeleteResponse,
+  ProposalListResponse,
+} from './api.proposal.types';
 
 const proposalCreate = (data: ProposalCreateRequest) =>
   APIbase.post<ProposalCreateResponse>('/proposal', data);
 
-export interface ProposalListResponse extends Response {
-  data: {
-    proposals: Proposal[];
-  };
-}
-
 const proposalList = () =>
   APIbase.get<ProposalListResponse>('/proposal/user/received');
+
+const proposalDelete = ({uuid}: ProposalDeleteRequest) =>
+  APIbase.delete<ProposalDeleteResponse>(`/proposal/${uuid}`);
 
 export default {
   create: proposalCreate,
   list: proposalList,
+  delete: proposalDelete,
 };

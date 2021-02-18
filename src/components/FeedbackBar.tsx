@@ -22,7 +22,7 @@ const FeedbackBar = () => {
     }
   }, [dispatch, feedback, type, message]);
 
-  return <FlashMessage position="bottom" />;
+  return <FlashMessage position="top" />;
 };
 
 export default FeedbackBar;

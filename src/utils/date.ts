@@ -18,3 +18,13 @@ export const format = (
     format ?? getCurrentFormat(),
     merge(options, getDefaultOptions()),
   );
+
+export const isEqualDate = (first?: Date, second?: Date) => {
+  if (!first || !second) return false;
+
+  return (
+    first.getDate() === second.getDate() &&
+    first.getMonth() === second.getMonth() &&
+    first.getFullYear() === second.getFullYear()
+  );
+};

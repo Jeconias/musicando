@@ -69,6 +69,7 @@ const userSlice = createSlice<
         response: undefined,
       };
     });
+
     builder.addCase(userReadAsyncThunk.pending.toString(), (state) => {
       state.read.loading = 'loading';
     });

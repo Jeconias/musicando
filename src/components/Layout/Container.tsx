@@ -11,7 +11,10 @@ const Container = ({...props}: ContainerProps) => (
   <KeyboardAvoidingViewStyled
     behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     enabled>
-    <ScrollView contentContainerStyle={{flexGrow: 1}}>
+    <ScrollView
+      showsVerticalScrollIndicator={false}
+      contentContainerStyle={{flexGrow: 1}}
+      style={{backgroundColor: 'red'}}>
       <ViewStyled {...props} />
     </ScrollView>
   </KeyboardAvoidingViewStyled>

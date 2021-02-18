@@ -2,7 +2,7 @@ import {yupResolver} from '@hookform/resolvers/yup';
 import {isEmpty} from 'lodash';
 import React, {Fragment, useCallback, useEffect, useState} from 'react';
 import {Controller, useForm} from 'react-hook-form';
-import {ScrollView, Image, View} from 'react-native';
+import {Image, View} from 'react-native';
 import styled, {css} from 'styled-components/native';
 import {fonts, SafeAreaView} from '~/components/common';
 import Feedback from '~/components/Feedback/Feedback';
@@ -71,15 +71,7 @@ const EventDetailsScreen = ({route: {params}}: EventDetailsScreenInterface) => {
   const [isOpenLightBox, setIsOpenLightBox] = useState(false);
   const [loading, setLoading] = useState<LoadingStatus>('idle');
 
-  const {
-    control,
-    handleSubmit,
-    setValue,
-    errors,
-    watch,
-    register,
-    reset,
-  } = useForm({
+  const {control, handleSubmit, errors, reset} = useForm({
     mode: 'onTouched',
     resolver: yupResolver(schema),
     defaultValues: defaultValues,
@@ -143,59 +135,63 @@ const EventDetailsScreen = ({route: {params}}: EventDetailsScreenInterface) => {
         {loading === 'loading' && <Loading />}
         {hasEvent && loading === 'ok' && (
           <Fragment>
-            <ScrollView>
-              <UserInfos>
-                <WrapperUserPhoto>
-                  <ImageContainer>
-                    {event?.cover || eventCover ? (
-                      <Image source={{uri: event?.cover ?? eventCover}} />
-                    ) : (
-                      <Icon icon="event" size="xl" color="text" />
-                    )}
-                  </ImageContainer>
-                </WrapperUserPhoto>
-                <Infos>
-                  <Like onPress={() => {}}>
-                    <Icon icon="heart" size="md" />
-                  </Like>
-                  <UserName size="sm" color="primary">
-                    {event?.title ?? ''}
-                  </UserName>
+            <UserInfos>
+              <WrapperUserPhoto>
+                <ImageContainer>
+                  {event?.cover || eventCover ? (
+                    <Image source={{uri: event?.cover || eventCover}} />
+                  ) : (
+                    <Icon icon="event" size="xl" color="text" />
+                  )}
+                </ImageContainer>
+              </WrapperUserPhoto>
+              <Infos>
+                <Like onPress={() => {}}>
+                  <Icon icon="heart" size="md" />
+                </Like>
+                <UserName size="sm" color="primary">
+                  {event?.title ?? ''}
+                </UserName>
+                <Info>
+                  <Icon icon="star" size="sm" color="text" marginRight="xxs" />
+                  <Text size="xs" color="white">
+                    4.5
+                  </Text>
+                </Info>
+                {(event?.valueRef || event?.value_ref) && (
                   <Info>
                     <Icon
-                      icon="star"
+                      icon="money"
                       size="sm"
                       color="text"
                       marginRight="xxs"
                     />
-                    <Text size="sm" color="white">
-                      4.5
+
+                    <Text size="xs" color="white">
+                      R${' '}
+                      {(event?.valueRef ?? event?.value_ref ?? '').toString()}
                     </Text>
                   </Info>
-                  {(event?.valueRef || event?.value_ref) && (
-                    <Info>
-                      <Icon
-                        icon="money"
-                        size="sm"
-                        color="text"
-                        marginRight="xxs"
-                      />
-
-                      <Text size="sm" color="white">
-                        R${' '}
-                        {(event?.valueRef ?? event?.value_ref ?? '').toString()}
-                      </Text>
-                    </Info>
-                  )}
-                </Infos>
-              </UserInfos>
-              <ContentsWrapper>
-                <ContentTitle>Resumo</ContentTitle>
-                <DescriptionText size="xs">
-                  {event?.description ?? ''}
-                </DescriptionText>
-              </ContentsWrapper>
-            </ScrollView>
+                )}
+                <Info>
+                  <Icon
+                    icon="location"
+                    size="sm"
+                    color="text"
+                    marginRight="xxs"
+                  />
+                  <Text size="xs" color="white">
+                    {event?.address || ''}
+                  </Text>
+                </Info>
+              </Infos>
+            </UserInfos>
+            <ContentsWrapper>
+              <ContentTitle>Resumo</ContentTitle>
+              <DescriptionText size="xs">
+                {event?.description ?? ''}
+              </DescriptionText>
+            </ContentsWrapper>
             {user?.userType === UserType.MUSICIAN && (
               <Fragment>
                 <Proposal onPress={toggleLightBox}>

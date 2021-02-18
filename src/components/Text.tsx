@@ -9,6 +9,7 @@ interface TextInterface
   size?: Size;
   color?: Color;
   marginBottom?: Size;
+  marginLeft?: Size | 'auto';
   textAlign?: 'center';
 }
 
@@ -20,9 +21,10 @@ const TextStyled = styled(TextBase)<{
   size?: Size;
   color?: Color;
   marginBottom?: Size;
+  marginLeft?: Size | 'auto';
   textAlign?: 'center';
 }>`
-  ${({theme, size, color, marginBottom, textAlign}) => css`
+  ${({theme, size, color, marginBottom, marginLeft, textAlign}) => css`
     font-family: 'Rubik-Regular';
     color: ${theme.colors.white};
     font-size: ${size ? theme.fontSize[size] : theme.fontSize.md};
