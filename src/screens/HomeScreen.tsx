@@ -39,7 +39,7 @@ const HomeScreen = () => {
   const {to, toggleDrawer} = useNavigate();
   const {width, height} = useDeviceDimension();
   const {feedback} = useFeedback();
-  const {xLeftAnimation, xRightAnimation} = useAnimation({});
+  const {startAnimation, xLeftAnimation, xRightAnimation} = useAnimation({});
 
   const {proposals, loadingProposals, loadingDeals, deals} = useReduxSelector(
     (state) => ({
@@ -112,6 +112,10 @@ const HomeScreen = () => {
       ]);
     })();
   }, [dispatch]);
+
+  useEffect(() => {
+    if (loadingDeals === 'ok' && loadingProposals === 'ok') startAnimation();
+  }, [loadingDeals, loadingProposals, startAnimation]);
 
   return (
     <SafeAreaView>
