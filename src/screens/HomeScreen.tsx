@@ -2,13 +2,14 @@ import {addDays, subDays} from 'date-fns';
 import {capitalize, orderBy} from 'lodash';
 import {math, rgba} from 'polished';
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
-import {View} from 'react-native';
+import {Animated, View} from 'react-native';
 import styled, {css} from 'styled-components/native';
 import ProposalCard from '~/components/Card/ProposalCard';
 import {SafeAreaView} from '~/components/common';
 import Feedback from '~/components/Feedback/Feedback';
 import Icon from '~/components/Icon';
 import ContainerWithHeader from '~/components/Layout/ContainerWithHeader';
+import ScrollView from '~/components/Layout/ScrollView';
 import Loading from '~/components/Loading/Loading';
 import Text from '~/components/Text';
 import {AppStackScreens, LoadingStatus, RootStackScreens} from '~/config/types';
@@ -22,6 +23,7 @@ import {
   proposalListAsyncThunk,
   updateProposal,
 } from '~/core/store/actions/proposal';
+import useAnimation from '~/hooks/useAnimation';
 import useDeviceDimension from '~/hooks/useDeviceDimension';
 import useFeedback from '~/hooks/useFeedback';
 import useNavigate from '~/hooks/useNavigate';
@@ -37,6 +39,7 @@ const HomeScreen = () => {
   const {to, toggleDrawer} = useNavigate();
   const {width, height} = useDeviceDimension();
   const {feedback} = useFeedback();
+  const {xLeftAnimation, xRightAnimation} = useAnimation({});
 
   const {proposals, loadingProposals, loadingDeals, deals} = useReduxSelector(
     (state) => ({
@@ -112,109 +115,112 @@ const HomeScreen = () => {
 
   return (
     <SafeAreaView>
-      <ContainerWithHeader
-        iconLeft={{
-          icon: 'system',
-          backgroundColor: 'backgroundBlackSupport',
-          onPress: toggleDrawer,
-        }}
-        title="Dashboard">
-        <HeaderBackground width={width} height={height}>
-          {new Array(5).fill(null).map((_, k) => {
-            const eventDate = dealMemorized?.proposal?.event?.date
-              ? new Date(dealMemorized.proposal.event.date || '')
-              : undefined;
-            const calc = 2 - k;
-            if (k !== 2) {
-              const date =
-                calc > 0
-                  ? subDays(today, calc)
-                  : addDays(today, Math.abs(calc));
+      <ScrollView>
+        <ContainerWithHeader
+          iconLeft={{
+            icon: 'system',
+            backgroundColor: 'backgroundBlackSupport',
+            onPress: toggleDrawer,
+          }}
+          title="Dashboard">
+          <HeaderBackground width={width} height={height}>
+            {new Array(5).fill(null).map((_, k) => {
+              const eventDate = dealMemorized?.proposal?.event?.date
+                ? new Date(dealMemorized.proposal.event.date || '')
+                : undefined;
+              const calc = 2 - k;
+              if (k !== 2) {
+                const date =
+                  calc > 0
+                    ? subDays(today, calc)
+                    : addDays(today, Math.abs(calc));
 
-              const withDot = isEqualDate(date, eventDate);
-              return <Day key={k} date={date} withDot={withDot} />;
-            } else {
-              const withDot = isEqualDate(today, eventDate);
-              return (
-                <Day key={k} date={today} withBackground withDot={withDot} />
-              );
-            }
-          })}
-        </HeaderBackground>
+                const withDot = isEqualDate(date, eventDate);
+                return <Day key={k} date={date} withDot={withDot} />;
+              } else {
+                const withDot = isEqualDate(today, eventDate);
+                return (
+                  <Day key={k} date={today} withBackground withDot={withDot} />
+                );
+              }
+            })}
+          </HeaderBackground>
 
-        {loadingProposals === 'loading' || loadingDeals === 'loading' ? (
-          <Loading />
-        ) : loadingProposals === 'error' || loadingDeals === 'error' ? (
-          <Feedback
-            title="Ops! tivemos um erro inesperado. 😱"
-            text="Por favor, verifique a conexão com a sua internet e tente novamente."
-          />
-        ) : null}
-        {loadingProposals === 'ok' && loadingDeals === 'ok' && (
-          <Content>
-            {dealMemorized && (
-              <Section>
-                <NextEventCard>
-                  <SectionTitle size="md" marginBottom="sm">
-                    Próximo evento -{' '}
-                    {capitalizeByIndex(
-                      format(
-                        new Date(dealMemorized.proposal.event.date),
-                        'dd MMM',
-                      ),
-                      3,
-                    )}
-                  </SectionTitle>
-                  <DescriptionWrapper>
-                    <View>
-                      <Text size="sm" marginBottom="xs">
-                        {dealMemorized.proposal.event.title}
-                      </Text>
+          {loadingProposals === 'loading' || loadingDeals === 'loading' ? (
+            <Loading />
+          ) : loadingProposals === 'error' || loadingDeals === 'error' ? (
+            <Feedback
+              title="Ops! tivemos um erro inesperado. 😱"
+              text="Por favor, verifique a conexão com a sua internet e tente novamente."
+            />
+          ) : null}
+          {loadingProposals === 'ok' && loadingDeals === 'ok' && (
+            <Content>
+              {dealMemorized && (
+                <Section style={{transform: [{translateX: xRightAnimation}]}}>
+                  <NextEventCard>
+                    <SectionTitle size="md" marginBottom="xs">
+                      Próximo evento -{' '}
+                      {capitalizeByIndex(
+                        format(
+                          new Date(dealMemorized.proposal.event.date),
+                          'dd MMM',
+                        ),
+                        3,
+                      )}
+                    </SectionTitle>
+                    <DescriptionWrapper>
+                      <View>
+                        <Text size="sm">
+                          {dealMemorized.proposal.event.title}
+                        </Text>
 
-                      <Text size="xs">
-                        {dealMemorized.proposal.event.address}
-                      </Text>
-                    </View>
-                    <NextEventActions>
-                      <SeeEvent
-                        onPress={() => {
-                          to(RootStackScreens.AppStack, {
-                            screen: AppStackScreens.EventDetails,
-                            params: {
-                              event: dealMemorized.proposal.event,
-                            },
-                          });
-                        }}>
-                        <Icon icon="arrowRight" />
-                      </SeeEvent>
-                    </NextEventActions>
-                  </DescriptionWrapper>
-                </NextEventCard>
-              </Section>
-            )}
-            <ProposalsSection>
-              <Text size="sm">Últimas propostas</Text>
-              <ListProposals>
-                {proposalsMemorized?.length === 0 && (
-                  <StyledFeedback
-                    title="Nada por aqui 😪"
-                    text="No momento, você não possui propostas."
-                  />
-                )}
-                {proposalsMemorized?.map((p) => (
-                  <ProposalCard
-                    key={p.uuid}
-                    proposal={p}
-                    onAccepted={handleAcceptedProposal}
-                    onRejected={handleRejectedProposal}
-                    disabledActions={loadingHandleProposal === 'loading'}
-                  />
-                ))}
-              </ListProposals>
-            </ProposalsSection>
-          </Content>
-        )}
-      </ContainerWithHeader>
+                        <Text size="xs">
+                          {dealMemorized.proposal.event.address}
+                        </Text>
+                      </View>
+                      <NextEventActions>
+                        <SeeEvent
+                          onPress={() => {
+                            to(RootStackScreens.AppStack, {
+                              screen: AppStackScreens.EventDetails,
+                              params: {
+                                event: dealMemorized.proposal.event,
+                              },
+                            });
+                          }}>
+                          <Icon icon="arrowRight" />
+                        </SeeEvent>
+                      </NextEventActions>
+                    </DescriptionWrapper>
+                  </NextEventCard>
+                </Section>
+              )}
+              <ProposalsSection
+                style={{transform: [{translateX: xLeftAnimation}]}}>
+                <Text size="sm">Últimas propostas</Text>
+                <ListProposals>
+                  {proposalsMemorized?.length === 0 && (
+                    <StyledFeedback
+                      title="Nada por aqui 😪"
+                      text="No momento, você não possui propostas."
+                    />
+                  )}
+                  {proposalsMemorized?.map((p) => (
+                    <ProposalCard
+                      key={p.uuid}
+                      proposal={p}
+                      onAccepted={handleAcceptedProposal}
+                      onRejected={handleRejectedProposal}
+                      disabledActions={loadingHandleProposal === 'loading'}
+                    />
+                  ))}
+                </ListProposals>
+              </ProposalsSection>
+            </Content>
+          )}
+        </ContainerWithHeader>
+      </ScrollView>
     </SafeAreaView>
   );
 };
@@ -273,7 +279,7 @@ const DateText = styled.View<{withBackground?: boolean}>`
 const DateDot = styled.View`
   ${({theme}) => css`
     position: absolute;
-    bottom: 0;
+    bottom: 5px;
     width: 6px;
     height: 6px;
     border-radius: 6px;
@@ -285,7 +291,7 @@ const Content = styled.View`
   flex: 1;
 `;
 
-const Section = styled.View`
+const Section = styled(Animated.View)`
   ${({theme}) => css`
     margin-bottom: ${theme.spacing.md};
   `}
@@ -328,7 +334,7 @@ const SeeEvent = styled.TouchableOpacity`
   `}
 `;
 
-const ProposalsSection = styled.View`
+const ProposalsSection = styled(Animated.View)`
   ${({theme}) => css`
     padding: ${theme.spacing.sm};
     background-color: ${theme.colors.backgroundBlackOpacity};

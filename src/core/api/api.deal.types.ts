@@ -11,7 +11,10 @@ export interface DealCreateRequest {
 export interface DealCreateResponse extends Response {}
 
 interface ProposalEntityResponse extends Pick<Proposal, 'uuid'> {
-  event: Pick<Event, 'date' | 'description' | 'title' | 'address' | 'valueRef'>;
+  event: Pick<
+    Event,
+    'date' | 'description' | 'title' | 'address' | 'valueRef' | 'hasDeal'
+  >;
 }
 
 interface DealEntityResponse

@@ -1,5 +1,6 @@
 import Config from 'react-native-config';
 import {Dimensions} from 'react-native';
+import {normalize} from '~/utils/helpers';
 
 const deviceDimensions = Dimensions.get('window');
 
@@ -27,12 +28,12 @@ export const THEME = {
     feedbackSupport: '#386fa4',
   },
   fontSize: {
-    xxs: '11px',
-    xs: '13px',
-    sm: '16px',
-    md: '24px',
-    lg: '32px',
-    xlg: '40px',
+    xxs: `${normalize(12)}px`,
+    xs: `${normalize(14)}px`,
+    sm: `${normalize(18)}px`,
+    md: `${normalize(24)}px`,
+    lg: `${normalize(32)}px`,
+    xlg: `${normalize(40)}px`,
   },
   spacing: {
     xxs: '4px',

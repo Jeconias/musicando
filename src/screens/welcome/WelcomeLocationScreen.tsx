@@ -18,7 +18,6 @@ const WelcomeLocationScreen = () => {
     <SafeAreaView>
       <Container>
         <Map icon="map" width={width} />
-        <LocationRN icon="location" withTheme widthX={width} heightX={height} />
         <LocationAnother icon="location" widthX={width} heightX={height} />
         <Summary
           title={'Eventos'}
@@ -45,18 +44,18 @@ const Map = styled(Icon)<{width: number}>`
   margin-bottom: ${({theme}) => theme.spacing.md};
 `;
 
-const LocationRN = styled(Icon)<{widthX: number; heightX: number}>`
+/* const LocationRN = styled(Icon)<{widthX: number; heightX: number}>`
   ${({widthX, heightX}) => css`
     position: absolute;
     top: ${Math.ceil((widthX - 35) / 2)}px;
     right: ${Math.ceil((heightX - 115) / 3)}px;
   `};
-`;
+`; */
 
 const LocationAnother = styled(Icon)<{widthX: number; heightX: number}>`
   ${({widthX, heightX}) => css`
     position: absolute;
-    top: ${Math.ceil(widthX / 2)}px;
-    right: ${Math.ceil(heightX / 2.8)}px;
+    top: ${Math.ceil(widthX / 1.8)}px;
+    right: ${Math.ceil(heightX / 3.2)}px;
   `};
 `;

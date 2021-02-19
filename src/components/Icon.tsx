@@ -32,6 +32,7 @@ import GlassCupSVG from '../assets/svgs/glass-cup.svg';
 import PlusSVG from '../assets/svgs/plus.svg';
 import CommentSVG from '../assets/svgs/comment.svg';
 import CameraSVG from '../assets/svgs/camera.svg';
+import {normalize} from '~/utils/helpers';
 
 const ICONS = {
   map: MapSVG,
@@ -66,10 +67,10 @@ const ICONS = {
 };
 
 const SIZES = {
-  sm: 16,
-  md: 24,
-  lg: 32,
-  xl: 40,
+  sm: normalize(16),
+  md: normalize(24),
+  lg: normalize(32),
+  xl: normalize(40),
 };
 
 export type IconType = keyof typeof ICONS;

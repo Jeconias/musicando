@@ -146,18 +146,18 @@ const EventDetailsScreen = ({route: {params}}: EventDetailsScreenInterface) => {
                 </ImageContainer>
               </WrapperUserPhoto>
               <Infos>
-                <Like onPress={() => {}}>
+                {/*  <Like onPress={() => {}}>
                   <Icon icon="heart" size="md" />
-                </Like>
+                </Like> */}
                 <UserName size="sm" color="primary">
                   {event?.title ?? ''}
                 </UserName>
-                <Info>
+                {/* <Info>
                   <Icon icon="star" size="sm" color="text" marginRight="xxs" />
                   <Text size="xs" color="white">
                     4.5
                   </Text>
-                </Info>
+                </Info> */}
                 {(event?.valueRef || event?.value_ref) && (
                   <Info>
                     <Icon
@@ -175,7 +175,7 @@ const EventDetailsScreen = ({route: {params}}: EventDetailsScreenInterface) => {
                 )}
                 <Info>
                   <Icon
-                    icon="location"
+                    icon="locationBig"
                     size="sm"
                     color="text"
                     marginRight="xxs"
@@ -192,7 +192,7 @@ const EventDetailsScreen = ({route: {params}}: EventDetailsScreenInterface) => {
                 {event?.description ?? ''}
               </DescriptionText>
             </ContentsWrapper>
-            {user?.userType === UserType.MUSICIAN && (
+            {user?.userType === UserType.MUSICIAN && !event?.hasDeal && (
               <Fragment>
                 <Proposal onPress={toggleLightBox}>
                   <Text size="sm" textAlign="center">
@@ -346,7 +346,7 @@ const ContentsWrapper = styled.View`
 
 const ContentTitle = styled(Text)`
   ${({theme}) => css`
-    margin-bottom: ${theme.spacing.sm};
+    margin-bottom: ${theme.spacing.xs};
   `}
 `;
 

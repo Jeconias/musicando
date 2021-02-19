@@ -42,7 +42,6 @@ const dealSlice = createSlice<
     builder.addCase<string, PayloadAction<DealReadResponse>>(
       dealReadAsyncThunk.fulfilled.toString(),
       (state, action) => {
-        console.log(action);
         state.read.response = action.payload;
         state.read.loading = 'ok';
       },

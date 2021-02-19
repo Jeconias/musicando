@@ -93,9 +93,9 @@ const ProposalCard = ({
   return (
     <Container>
       <ActionButton onPress={handleDescriptionShow}>
+        <Dot proposalState={proposal.state} />
         <TitleWrapper>
-          <Dot proposalState={proposal.state} />
-          <Text size="sm">{proposal.event.title}</Text>
+          <Test size="sm">{proposal.event.title}</Test>
         </TitleWrapper>
         <View>
           <Text size="xs" color="primary">
@@ -127,12 +127,12 @@ const ProposalCard = ({
               <Action
                 onPress={() => onAccepted(proposal.uuid)}
                 disabled={disabledActions}>
-                <Icon icon="checkSmall" size="sm" color="feedbackSuccess" />
+                <Icon icon="checkSmall" size="md" color="feedbackSuccess" />
               </Action>
               <Action
                 onPress={() => onRejected(proposal.uuid)}
                 disabled={disabledActions}>
-                <Icon icon="closeSmall" size="sm" color="feedbackError" />
+                <Icon icon="closeSmall" size="md" color="feedbackError" />
               </Action>
             </Actions>
           )}
@@ -157,17 +157,21 @@ const ActionButton = styled.TouchableOpacity`
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
+    padding-left: ${theme.spacing.md};
     margin-bottom: ${theme.spacing.xs};
   `}
 `;
 
 const TitleWrapper = styled.View`
+  flex: 1;
   flex-direction: row;
   align-items: center;
 `;
 
 const Dot = styled.View<{proposalState: ProposalState}>`
   ${({theme, proposalState}) => css`
+    position: absolute;
+    left: 0;
     width: 10px;
     height: 10px;
     border-radius: 10px;
@@ -197,7 +201,7 @@ const Actions = styled(Animated.View)`
     align-items: center;
     justify-content: flex-end;
     flex-direction: row;
-    margin: 0 -${theme.spacing.xs};
+    margin: 0 -${theme.spacing.xxs};
     padding: ${theme.spacing.xs} 0;
   `}
 `;
@@ -210,7 +214,7 @@ const Action = styled.TouchableOpacity`
     justify-content: center;
     padding: ${theme.spacing.xxs};
     background-color: ${theme.colors.backgroundBlackSupport};
-    margin: 0 ${theme.spacing.xs};
+    margin: 0 ${theme.spacing.xxs};
     border-radius: 5px;
   `}
 `;
@@ -218,3 +222,5 @@ const Action = styled.TouchableOpacity`
 const TextLeft = styled(Text)`
   margin-left: auto;
 `;
+
+const Test = styled(Text)``;

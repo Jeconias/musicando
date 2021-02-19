@@ -92,7 +92,6 @@ const userSlice = createSlice<
       string,
       PayloadAction<UserListResponse, string, {arg?: UserListRequest}>
     >(userListAsyncThunk.fulfilled.toString(), (state, action) => {
-      console.log(action);
       if (action?.meta?.arg?.pg && action?.meta?.arg?.pg >= 1) {
         state.list.pg = action?.meta?.arg.pg;
         state.list.response = {

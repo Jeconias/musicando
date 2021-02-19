@@ -46,7 +46,7 @@ const OpportunityCard = ({
         </DefaultImage>
       )}
       <Content>
-        <Text size="sm" color="white">
+        <Text size="sm" color="white" marginBottom="xxs">
           {props.title}
         </Text>
         <Description size="xs" color="text">

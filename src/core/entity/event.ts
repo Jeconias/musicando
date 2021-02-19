@@ -11,6 +11,7 @@ export interface Event {
   midias: [];
   address: string;
   junk: boolean;
+  hasDeal?: boolean;
   date: string;
   created: string;
 }
