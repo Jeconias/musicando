@@ -17,7 +17,7 @@ interface ProposalEntityResponse extends Pick<Proposal, 'uuid'> {
   >;
 }
 
-interface DealEntityResponse
+export interface DealEntityResponse
   extends Omit<Deal, 'promoter' | 'musician' | 'proposal'> {
   promoter: Pick<Promoter, 'uuid' | 'photo' | 'name' | 'nickName'>;
   musician: Pick<Musician, 'uuid' | 'photo' | 'name' | 'nickName'>;

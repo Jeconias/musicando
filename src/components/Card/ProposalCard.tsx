@@ -2,6 +2,7 @@ import React, {useCallback, useMemo, useRef, useState} from 'react';
 import {Animated, Easing, LayoutChangeEvent, View} from 'react-native';
 import styled, {css} from 'styled-components/native';
 import {Proposal, ProposalState} from '~/core/entity/proposal';
+import useAuth from '~/hooks/useAuth';
 import {format} from '~/utils/date';
 import Icon from '../Icon';
 import Text from '../Text';
@@ -19,6 +20,7 @@ const ProposalCard = ({
   onAccepted,
   onRejected,
 }: ProposalCardInterface) => {
+  const {user} = useAuth();
   const animatedDescription = useRef(new Animated.Value(0)).current;
   const animatedActions = useRef(new Animated.Value(0)).current;
 
@@ -114,28 +116,31 @@ const ProposalCard = ({
           <Text size="xs" marginBottom="sm">
             {proposal.description}
           </Text>
-          <TextLeft size="xs">{proposal.from.name}.</TextLeft>
-          {proposal.state === ProposalState.AWAITING && (
-            <Actions
-              style={{
-                transform: [
-                  {
-                    translateX: animatedActionsMemorized,
-                  },
-                ],
-              }}>
-              <Action
-                onPress={() => onAccepted(proposal.uuid)}
-                disabled={disabledActions}>
-                <Icon icon="checkSmall" size="md" color="feedbackSuccess" />
-              </Action>
-              <Action
-                onPress={() => onRejected(proposal.uuid)}
-                disabled={disabledActions}>
-                <Icon icon="closeSmall" size="md" color="feedbackError" />
-              </Action>
-            </Actions>
-          )}
+          <TextLeft size="xs">
+            {user?.uuid === proposal.from.uuid ? 'Você' : proposal.from.name}.
+          </TextLeft>
+          {proposal.state === ProposalState.AWAITING &&
+            user?.uuid !== proposal.from.uuid && (
+              <Actions
+                style={{
+                  transform: [
+                    {
+                      translateX: animatedActionsMemorized,
+                    },
+                  ],
+                }}>
+                <Action
+                  onPress={() => onAccepted(proposal.uuid)}
+                  disabled={disabledActions}>
+                  <Icon icon="checkSmall" size="md" color="feedbackSuccess" />
+                </Action>
+                <Action
+                  onPress={() => onRejected(proposal.uuid)}
+                  disabled={disabledActions}>
+                  <Icon icon="closeSmall" size="md" color="feedbackError" />
+                </Action>
+              </Actions>
+            )}
         </Description>
       </DescrptionWrapper>
     </Container>

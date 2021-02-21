@@ -1,5 +1,5 @@
 import React from 'react';
-import {View} from 'react-native';
+import {Animated, View} from 'react-native';
 import {TouchableProps} from 'react-native-svg';
 import styled, {css} from 'styled-components/native';
 import {Color} from '~/config/types';
@@ -17,6 +17,7 @@ interface ContainerWithIconInterface extends ContainerProps, TouchableProps {
   iconRight?: IconHeader;
   iconLeft?: IconHeader;
   title?: string;
+  opacity?: any;
 }
 
 const ContainerWithHeader = ({
@@ -24,11 +25,12 @@ const ContainerWithHeader = ({
   iconRight,
   iconLeft,
   title,
+  opacity,
   ...props
 }: ContainerWithIconInterface) => (
-  <Container {...props}>
+  <ContainerBase {...props}>
     <Wrapper>
-      <Header>
+      <Header style={{opacity: opacity}}>
         {iconLeft?.icon && (
           <CloseButton onPress={iconLeft.onPress}>
             <BackgroundIcon backgroundColor={iconLeft.backgroundColor}>
@@ -47,7 +49,7 @@ const ContainerWithHeader = ({
       </Header>
       {children}
     </Wrapper>
-  </Container>
+  </ContainerBase>
 );
 
 export default ContainerWithHeader;
@@ -57,16 +59,15 @@ const Wrapper = styled(View)`
   position: relative;
 `;
 
-const Header = styled(View)`
+const Header = styled(Animated.View)`
   ${({theme}) => css`
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
     margin-bottom: ${theme.spacing.md};
+    z-index: 2;
   `}
 `;
-
-const Container = styled(ContainerBase)``;
 
 const CloseButton = styled.TouchableOpacity`
   z-index: 5;

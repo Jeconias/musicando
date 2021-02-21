@@ -7,8 +7,16 @@ export interface ProposalCreateRequest {
   description: string;
 }
 
-export interface ProposalCreateResponse extends Response {}
+export interface ProposalCreateResponse extends Response {
+  data: {
+    proposal: Proposal;
+  };
+}
 
+export type ProposalType = 'received' | 'sent';
+export interface ProposalListRequest {
+  type?: ProposalType;
+}
 export interface ProposalListResponse extends Response {
   data: {
     proposals: Proposal[];

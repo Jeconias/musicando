@@ -57,7 +57,7 @@ const schema = yup.object().shape({
     .test(
       'age',
       'Sua idade deve ser superior a 18 anos.',
-      (value) => !!value && differenceInYears(new Date(), value) > 18,
+      (value) => !!value && differenceInYears(new Date(), value) >= 18,
     ),
   password: yup
     .string()
@@ -115,8 +115,8 @@ const RegisterScreen = () => {
 
   const handleDatePicker = useCallback(
     (_: WindowsDatePickerChangeEvent, date?: Date) => {
-      setValue('birthdate', date, {shouldValidate: true});
       setShowDateTimePicker(false);
+      setValue('birthdate', date, {shouldValidate: true});
     },
     [setValue, setShowDateTimePicker],
   );
@@ -225,10 +225,11 @@ const RegisterScreen = () => {
           />
 
           <FormGroup
-            value={`${capitalizeByIndex(
-              format(birthdate ?? today, 'dd MMMM yyyy'),
-              3,
-            )}`}
+            value={
+              birthdate
+                ? `${capitalizeByIndex(format(birthdate, 'dd MMMM yyyy'), 3)}`
+                : ''
+            }
             onFocus={() => {
               Keyboard.dismiss();
               setShowDateTimePicker(true);
