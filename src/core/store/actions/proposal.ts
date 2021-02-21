@@ -46,6 +46,15 @@ const proposalSlice = createSlice<
     },
   },
   reducers: {
+    addProposal(state, action: PayloadAction<Proposal>) {
+      const hasProposal = state.list.response?.find(
+        (p) => p.uuid === action.payload.uuid,
+      );
+
+      if (hasProposal) return;
+
+      state.list.response?.push(action.payload);
+    },
     updateProposal(
       state,
       action: PayloadAction<{uuid: string; proposal: Proposal}>,
@@ -58,9 +67,11 @@ const proposalSlice = createSlice<
         typeof proposal === 'object' &&
         !Array.isArray(proposal)
       ) {
-        const currentProposal =
-          state.list.response?.find((p) => p.uuid === action.payload.uuid) ||
-          {};
+        const currentProposal = state.list.response?.find(
+          (p) => p.uuid === action.payload.uuid,
+        );
+
+        if (!currentProposal) return;
 
         state.list.response = [
           ...(state.list.response?.filter(
@@ -111,5 +122,5 @@ const proposalSlice = createSlice<
     );
   },
 });
-export const {updateProposal} = proposalSlice.actions;
+export const {addProposal, updateProposal} = proposalSlice.actions;
 export default proposalSlice;

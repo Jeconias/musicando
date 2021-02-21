@@ -5,9 +5,9 @@ import {
 } from '@react-navigation/stack';
 import useLoad from '~/hooks/useLoad';
 import LoginScreen from '~/screens/LoginScreen';
-import WelcomeLocationScreen from '~/screens/welcome/WelcomeLocationScreen';
-import WelcomeArtist from '~/screens/welcome/WelcomeArtist';
-import WelcomeNetworkingScreen from '~/screens/welcome/WelcomeNetworkingScreen';
+import WelcomeLocationScreen from '~/screens/Welcome/WelcomeLocationScreen';
+import WelcomeArtist from '~/screens/Welcome/WelcomeArtist';
+import WelcomeNetworkingScreen from '~/screens/Welcome/WelcomeNetworkingScreen';
 import OpportunitiesScreen from '~/screens/OpportunitiesScreen';
 import UserProfileScreen from '~/screens/UserProfileScreen';
 import {AppStackScreens} from '~/config/types';

@@ -22,7 +22,10 @@ import FormGroup from '~/components/Form/FormGroup';
 import useTheme from '~/hooks/useTheme';
 import {MaskService, TextInputMask} from 'react-native-masked-text';
 import useReduxDispatch from '~/hooks/useReduxDispatch';
-import {proposalCreateAsyncThunk} from '~/core/store/actions/proposal';
+import {
+  addProposal,
+  proposalCreateAsyncThunk,
+} from '~/core/store/actions/proposal';
 import useFeedback from '~/hooks/useFeedback';
 import useReduxSelector from '~/hooks/useReduxSelector';
 
@@ -93,11 +96,12 @@ const EventDetailsScreen = ({route: {params}}: EventDetailsScreenInterface) => {
         }),
       );
       if (proposalCreateAsyncThunk.fulfilled.match(resp)) {
-        reset(defaultValues);
+        dispatch(addProposal(resp.payload.data.proposal));
         feedback({
           type: 'success',
           message: 'Proposta enviada com sucesso!',
         });
+        reset(defaultValues);
       }
       toggleLightBox();
     },
