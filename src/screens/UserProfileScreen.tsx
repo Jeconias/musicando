@@ -22,7 +22,7 @@ const UserProfileScreen = ({route: {params}}: UserProfileScreenInterface) => {
   return (
     <SafeAreaView>
       <ContainerWithHeader
-        iconLeft={{icon: 'arrowLeft', onPress: goBack}}
+        iconLeft={{icon: 'left', onPress: goBack}}
         title="Perfil">
         {!hasUser && (
           <Feedback

@@ -28,13 +28,21 @@ import {
 } from '~/core/store/actions/proposal';
 import useFeedback from '~/hooks/useFeedback';
 import useReduxSelector from '~/hooks/useReduxSelector';
+import {DealEntityResponse} from '~/core/api/api.deal.types';
+import {
+  dealCreateAsyncThunk,
+  dealDeleteAsyncThunk,
+  removeDeal,
+} from '~/core/store/actions/deal';
+import {DealState} from '~/core/entity/deal';
 
 interface FormData {
   price: number;
   description: string;
 }
 
-interface EventDetailsScreenInterface extends RouteParams<{event: Event}> {}
+interface EventDetailsScreenInterface
+  extends RouteParams<{event: Event; deal?: DealEntityResponse}> {}
 
 const schema = yup.object().shape({
   price: yup
@@ -68,7 +76,10 @@ const EventDetailsScreen = ({route: {params}}: EventDetailsScreenInterface) => {
   );
 
   const event = params?.event;
+  const deal = params?.deal;
+
   const hasEvent = !isEmpty(event);
+  const hasDeal = !isEmpty(deal);
 
   const [eventCover, setEventCover] = useState<string | undefined>();
   const [isOpenLightBox, setIsOpenLightBox] = useState(false);
@@ -77,7 +88,10 @@ const EventDetailsScreen = ({route: {params}}: EventDetailsScreenInterface) => {
   const {control, handleSubmit, errors, reset} = useForm({
     mode: 'onTouched',
     resolver: yupResolver(schema),
-    defaultValues: defaultValues,
+    defaultValues: {
+      ...defaultValues,
+      price: event?.valueRef || event?.value_ref || 0,
+    },
   });
 
   const toggleLightBox = useCallback(() => setIsOpenLightBox((prev) => !prev), [
@@ -108,6 +122,18 @@ const EventDetailsScreen = ({route: {params}}: EventDetailsScreenInterface) => {
     [dispatch, event, reset, toggleLightBox, feedback],
   );
 
+  const handleWithDealCancel = useCallback(async () => {
+    const resp = await dispatch(dealDeleteAsyncThunk({uuid: deal?.uuid || ''}));
+    if (dealDeleteAsyncThunk.fulfilled.match(resp)) {
+      dispatch(removeDeal({uuid: deal?.uuid}));
+      feedback({
+        type: 'success',
+        message: 'Acordo cancelado.',
+      });
+      goBack();
+    }
+  }, [dispatch, deal, feedback, goBack]);
+
   useEffect(() => {
     if (!event?.uuid || eventCover === '' || eventCover) return;
     setLoading('loading');
@@ -125,7 +151,7 @@ const EventDetailsScreen = ({route: {params}}: EventDetailsScreenInterface) => {
     <SafeAreaView>
       <ContainerWithHeader
         iconLeft={{
-          icon: 'arrowLeft',
+          icon: 'left',
           onPress: goBack,
           backgroundColor: 'backgroundBlackSupport',
         }}
@@ -196,79 +222,90 @@ const EventDetailsScreen = ({route: {params}}: EventDetailsScreenInterface) => {
                 {event?.description ?? ''}
               </DescriptionText>
             </ContentsWrapper>
-            {user?.userType === UserType.MUSICIAN && !event?.hasDeal && (
-              <Fragment>
-                <Proposal onPress={toggleLightBox}>
-                  <Text size="sm" textAlign="center">
-                    Lançar uma proposta
-                  </Text>
-                </Proposal>
-                <LightBoxView
-                  isVisible={isOpenLightBox}
-                  onBackButtonPress={() => {
-                    if (proposalLoading !== 'loading') toggleLightBox();
-                  }}>
-                  <Flex>
-                    <View>
-                      <Text size="md" textAlign="center" marginBottom="md">
-                        Realizar Proposta
-                      </Text>
-                      <Controller
-                        name="price"
-                        control={control}
-                        render={({onChange, onBlur, value}) => (
-                          <FormGroup
-                            tag={TextInputMask}
-                            inputMaskProps={{
-                              type: 'money',
-                              onChangeText: (value) =>
-                                onChange(
-                                  MaskService.toRawValue('money', value ?? ''),
-                                ),
-                            }}
-                            onBlur={onBlur}
-                            value={MaskService.toMask('money', value ?? '')}
-                            placeholder="Valor"
-                            placeholderTextColor={theme.colors.text}
-                            keyboardType="numeric"
-                            icon="money"
-                            error={errors?.price?.message}
-                          />
-                        )}
-                      />
-                      <Controller
-                        name="description"
-                        control={control}
-                        render={({onChange, onBlur, value}) => (
-                          <FormGroup
-                            onBlur={onBlur}
-                            onChangeText={(value) => onChange(value)}
-                            value={value}
-                            placeholder="Descrição"
-                            placeholderTextColor={theme.colors.text}
-                            keyboardType="default"
-                            multiline={true}
-                            icon="comment"
-                            error={errors?.description?.message}
-                          />
-                        )}
-                      />
-                    </View>
-                    {proposalLoading === 'loading' ? (
-                      <Loading />
-                    ) : (
-                      <Done
-                        onPress={handleSubmit(onSubmit)}
-                        disabled={hasError}>
-                        <Text size="sm" textAlign="center">
-                          Concluir
-                        </Text>
-                      </Done>
-                    )}
-                  </Flex>
-                </LightBoxView>
-              </Fragment>
+            {hasDeal && deal?.state === DealState.WAITING && (
+              <ActionButton onPress={handleWithDealCancel} hasDeal={hasDeal}>
+                <Text size="sm" textAlign="center">
+                  Cancelar acordo
+                </Text>
+              </ActionButton>
             )}
+            {user?.userType === UserType.MUSICIAN &&
+              event?.uuid !== deal?.proposal?.event?.uuid && (
+                <Fragment>
+                  <ActionButton onPress={toggleLightBox}>
+                    <Text size="sm" textAlign="center">
+                      Lançar uma proposta
+                    </Text>
+                  </ActionButton>
+                  <LightBoxView
+                    isVisible={isOpenLightBox}
+                    onBackButtonPress={() => {
+                      if (proposalLoading !== 'loading') toggleLightBox();
+                    }}>
+                    <Flex>
+                      <View>
+                        <Text size="md" textAlign="center" marginBottom="md">
+                          Realizar Proposta
+                        </Text>
+                        <Controller
+                          name="price"
+                          control={control}
+                          render={({onChange, onBlur, value}) => (
+                            <FormGroup
+                              tag={TextInputMask}
+                              inputMaskProps={{
+                                type: 'money',
+                                onChangeText: (value) =>
+                                  onChange(
+                                    MaskService.toRawValue(
+                                      'money',
+                                      value ?? '',
+                                    ),
+                                  ),
+                              }}
+                              onBlur={onBlur}
+                              value={MaskService.toMask('money', value ?? '')}
+                              placeholder="Valor"
+                              placeholderTextColor={theme.colors.text}
+                              keyboardType="numeric"
+                              icon="money"
+                              error={errors?.price?.message}
+                            />
+                          )}
+                        />
+                        <Controller
+                          name="description"
+                          control={control}
+                          render={({onChange, onBlur, value}) => (
+                            <FormGroup
+                              onBlur={onBlur}
+                              onChangeText={(value) => onChange(value)}
+                              value={value}
+                              placeholder="Descrição"
+                              placeholderTextColor={theme.colors.text}
+                              keyboardType="default"
+                              multiline={true}
+                              icon="comment"
+                              error={errors?.description?.message}
+                            />
+                          )}
+                        />
+                      </View>
+                      {proposalLoading === 'loading' ? (
+                        <Loading />
+                      ) : (
+                        <Done
+                          onPress={handleSubmit(onSubmit)}
+                          disabled={hasError}>
+                          <Text size="sm" textAlign="center">
+                            Concluir
+                          </Text>
+                        </Done>
+                      )}
+                    </Flex>
+                  </LightBoxView>
+                </Fragment>
+              )}
           </Fragment>
         )}
       </ContainerWithHeader>
@@ -379,11 +416,18 @@ const ButtonProposalCss = css(
   `,
 );
 
-const Proposal = styled.TouchableOpacity`
+const ActionButton = styled.TouchableOpacity<{hasDeal?: boolean}>`
   width: 100%;
   position: absolute;
   bottom: 0;
   ${ButtonProposalCss};
+
+  ${({theme, hasDeal}) => css`
+    ${hasDeal &&
+    css`
+      background-color: ${theme.colors.feedbackError};
+    `}
+  `}
 `;
 
 const Done = styled.TouchableOpacity`

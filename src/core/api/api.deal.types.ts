@@ -13,7 +13,13 @@ export interface DealCreateResponse extends Response {}
 interface ProposalEntityResponse extends Pick<Proposal, 'uuid'> {
   event: Pick<
     Event,
-    'date' | 'description' | 'title' | 'address' | 'valueRef' | 'hasDeal'
+    | 'uuid'
+    | 'date'
+    | 'description'
+    | 'title'
+    | 'address'
+    | 'valueRef'
+    | 'hasDeal'
   >;
 }
 
@@ -29,3 +35,9 @@ export interface DealReadResponse extends Response {
     deals: DealEntityResponse[];
   };
 }
+
+export interface DealDeleteRequest {
+  uuid: string;
+}
+
+export interface DealDeleteResponse extends Response {}

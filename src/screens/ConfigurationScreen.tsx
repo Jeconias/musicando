@@ -37,7 +37,7 @@ const ConfigurationScreen = () => {
                     <Text size="sm">Idioma</Text>
                   </Left>
                   <Right>
-                    <Icon icon="arrowRight" size="sm" />
+                    <Icon icon="right" size="sm" />
                   </Right>
                 </Option>
               </List>

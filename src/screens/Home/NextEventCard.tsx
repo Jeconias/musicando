@@ -6,7 +6,6 @@ import styled, {css} from 'styled-components/native';
 import Icon from '~/components/Icon';
 import Text from '~/components/Text';
 import {AppStackScreens, RootStackScreens} from '~/config/types';
-import {Deal} from '~/core/entity/deal';
 import useAnimation from '~/hooks/useAnimation';
 import useNavigate from '~/hooks/useNavigate';
 import {format} from '~/utils/date';
@@ -56,10 +55,11 @@ const NextEventCard = ({deal}: NextEventInterface) => {
                     screen: AppStackScreens.EventDetails,
                     params: {
                       event: deal.proposal.event,
+                      deal: deal,
                     },
                   });
                 }}>
-                <Icon icon="arrowRight" />
+                <Icon icon="right" />
               </SeeEvent>
             </NextEventActions>
           </DescriptionWrapper>

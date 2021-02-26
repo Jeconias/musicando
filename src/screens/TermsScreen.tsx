@@ -11,7 +11,7 @@ const TermsScreen = () => {
     <SafeAreaView>
       <ContainerWithHeader
         iconLeft={{
-          icon: 'arrowLeft',
+          icon: 'left',
           onPress: goBack,
         }}
         title="Termos">

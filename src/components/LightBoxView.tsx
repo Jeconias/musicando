@@ -3,6 +3,7 @@ import {default as RNModal, ModalProps} from 'react-native-modal';
 import styled, {css} from 'styled-components/native';
 import useTheme from '~/hooks/useTheme';
 import Icon from './Icon';
+
 interface LightBoxViewInterface extends ModalProps {}
 
 const LightBoxView = ({
@@ -23,7 +24,7 @@ const LightBoxView = ({
       <ModalBackground>
         <ButtonWrapper>
           <ToBack onPress={onBackButtonPress}>
-            <Icon icon="arrowLeft" size="sm" />
+            <Icon icon="left" size="sm" />
           </ToBack>
         </ButtonWrapper>
         {children}

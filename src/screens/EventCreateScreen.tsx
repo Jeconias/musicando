@@ -264,7 +264,7 @@ const EventCreateScreen = () => {
     <SafeAreaView>
       <ContainerWithHeader
         iconLeft={{
-          icon: 'arrowLeft',
+          icon: 'left',
           backgroundColor: 'backgroundBlackSupport',
           onPress: goBack,
         }}

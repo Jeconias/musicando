@@ -74,7 +74,7 @@ const SideBar = ({state, descriptors}: SideBarInterface) => {
                   </ItemName>
                 </IconWrapper>
                 {routeName !== DrawerStackScreens.Home && (
-                  <Icon icon="arrowRight" />
+                  <Icon icon="right" size="xs" />
                 )}
               </MainItem>
             );
@@ -134,6 +134,7 @@ const MainItem = styled.TouchableOpacity<{isFocused?: boolean}>`
     padding: ${theme.fontSize.xs} 0;
     border-bottom-width: 0.5px;
     border-color: ${theme.colors.backgroundBlackSupport};
+    margin-bottom: ${theme.spacing.xs};
 
     ${isFocused &&
     css`

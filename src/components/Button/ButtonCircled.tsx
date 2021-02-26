@@ -1,6 +1,5 @@
 import React from 'react';
-import styled, {css} from 'styled-components';
-import {TouchableOpacity} from 'react-native-gesture-handler';
+import styled, {css} from 'styled-components/native';
 import Icon, {IconType} from '../Icon';
 import {TouchableOpacityProps} from 'react-native';
 
@@ -8,10 +7,7 @@ interface ButtonCircledInterface extends TouchableOpacityProps {
   icon?: IconType;
 }
 
-const ButtonCircled = ({
-  icon = 'arrowRight',
-  ...props
-}: ButtonCircledInterface) => {
+const ButtonCircled = ({icon = 'right', ...props}: ButtonCircledInterface) => {
   return (
     <TouchableOpacityStyled {...props}>
       <Icon icon={icon} size="md" />
@@ -21,7 +17,7 @@ const ButtonCircled = ({
 
 export default ButtonCircled;
 
-const TouchableOpacityStyled = styled(TouchableOpacity)`
+const TouchableOpacityStyled = styled.TouchableOpacity`
   ${({theme}) => css`
     width: 50px;
     height: 50px;

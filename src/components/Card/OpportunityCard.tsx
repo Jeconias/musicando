@@ -26,11 +26,11 @@ const OpportunityCard = ({
   ...props
 }: OpportunityCardInterface) => (
   <Card>
-    <Like>
+    {/*  <Like>
       <TouchableOpacity onPress={() => {}}>
         <Icon icon="heart" size="md" color="text" />
       </TouchableOpacity>
-    </Like>
+    </Like> */}
     <CardButton
       onPress={() => {
         if (onSelect) onSelect(props);
